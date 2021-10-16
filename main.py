@@ -4,6 +4,7 @@ import math
 mariodir = 0
 mariorun = False
 mariojump = False
+jumpcnt = 0
 
 class Mario:
     def __init__(self):
@@ -74,17 +75,22 @@ def handle_events():
 def jump():
     global mariojump
     global mariodir
+    global jumpcnt
 
+    # 점프할때 마리오 시작위치를 넘겨주고 값이 변경되면 안됨
     x1, y1 = mario.x, mario.y
     x2, y2 = mario.x + 20, mario.y + 20
     x3, y3 = mario.x + 40, mario.y
 
-    for i in range(0, 100 + 1, 4):
-        t = i / 100
-        mario.x = (2 * t ** 2 - 3 * t + 1) * x1 + (-4 * t ** 2 + 4 * t) * x2 + (2 * t ** 2 - t) * x3
-        mario.y = (2 * t ** 2 - 3 * t + 1) * y1 + (-4 * t ** 2 + 4 * t) * y2 + (2 * t ** 2 - t) * y3
-    mariojump = False
-    mariodir = 0
+    t = jumpcnt / 100
+    mario.x = (2 * t ** 2 - 3 * t + 1) * x1 + (-4 * t ** 2 + 4 * t) * x2 + (2 * t ** 2 - t) * x3
+    mario.y = (2 * t ** 2 - 3 * t + 1) * y1 + (-4 * t ** 2 + 4 * t) * y2 + (2 * t ** 2 - t) * y3
+
+    if jumpcnt == 100:
+        mariojump = False
+        mariodir = 0
+    else:
+        jumpcnt += 1
 
 open_canvas()
 
