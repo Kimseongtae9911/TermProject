@@ -4,7 +4,7 @@ mushsizex = mushsizey = 50
 rocketsizex = 50; rocketsizey = 30
 class Mushroom:
     def __init__(self):
-        self.image = load_image('MushroomMonster.png')
+        self.image = load_image('Resource\MushroomMonster.png')
         self.frame = 0
         self.x = 800; self.y = 125
     def draw_mush(self):
@@ -16,7 +16,7 @@ class Mushroom:
 
 class Rocket:
     def __init__(self):
-        self.rocket = load_image('RocketMonster.png')
+        self.rocket = load_image('Resource\RocketMonster.png')
         self.frame = 0
         self.x = 0;
         self.y = 0

@@ -6,7 +6,8 @@ startx = 0
 
 class Mario:
     def __init__(self):
-        self.image = load_image('Mario.png')
+        self.image = load_image('Resource\Mario.png')
+        self.l_image = load_image('Resource\Mario_left.png')
         self.frame = 1
         self.start = 0
         self.x = 300; self.y = 125
@@ -20,15 +21,23 @@ class Mario:
 
     def left_move_draw(self):
         self.start = 32
-        self.image.clip_draw(self.start + self.frame * 15, 34, 16, 16, self.x, self.y, mariosizex, mariosizey)
+        self.l_image.clip_draw(self.start + self.frame * 15, 0, 16, 16, self.x, self.y, mariosizex, mariosizey)
 
-    def idle_draw(self):
+    def Ridle_draw(self):
         self.start = 0
         self.image.clip_draw(self.start, 34, 16, 16, self.x, self.y, mariosizex, mariosizey)
 
-    def jump_draw(self):
+    def Lidle_draw(self):
+        self.start = 0
+        self.l_image.clip_draw(self.start, 0, 16, 16, self.x, self.y, mariosizex, mariosizey)
+
+    def Rjump_draw(self):
         self.start = 16 * 7
         self.image.clip_draw(self.start, 34, 16, 16, self.x, self.y, mariosizex, mariosizey)
+
+    def Ljump_draw(self):
+        self.start = 16 * 7
+        self.l_image.clip_draw(self.start, 0, 16, 16, self.x, self.y, mariosizex, mariosizey)
 
     def move_right(self):
         global startx
@@ -69,12 +78,12 @@ class Mario:
             if self.jumping:
                 if self.jumpdir:
                     self.y += 25
-                    self.x -= 10
+                    self.x -= 20
                     if self.y - self.jumpstart >= 105:
                         self.jumpdir = False
                 else:
                     self.y -= 25
-                    self.x -= 10
+                    self.x -= 20
                     if self.y <= self.jumpstart:
                         self.y = self.jumpstart
                         self.jumpstart = 0
@@ -90,12 +99,12 @@ class Mario:
             if self.jumping:
                 if self.jumpdir:
                     self.y += 25
-                    self.x += 10
+                    self.x += 20
                     if self.y - self.jumpstart >= 105:
                         self.jumpdir = False
                 else:
                     self.y -= 25
-                    self.x += 10
+                    self.x += 20
                     if self.y <= self.jumpstart:
                         self.y = self.jumpstart
                         self.jumpstart = 0
@@ -119,6 +128,7 @@ class Mario:
                     self.jumpstart = 0
                     self.jumping = False
         return self.jumping
+
     def map_pos(self):
         return startx
 
