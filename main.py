@@ -77,6 +77,7 @@ while Play:
 
     clear_canvas()
 
+    gamemap.update()
     gamemap.draw(1)
     if mariodir == 1:
         if mariorun:
