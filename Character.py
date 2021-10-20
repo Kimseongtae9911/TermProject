@@ -121,3 +121,6 @@ class Mario:
         return self.jumping
     def map_pos(self):
         return startx
+
+    def get_marioPos(self):
+        return self.x, self.y

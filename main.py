@@ -1,13 +1,16 @@
 from pico2d import *
 import MakeMap as mymap
 import Character as Mario
+import Monster
+import time
+
 import math
 
 mariodir = 0
 mariorun = False
 mariojump = False
 SCREENW = 1280; SCREENH = 800
-
+begin = time.time()
 def handle_events():
     global Play
     global mariodir
@@ -58,16 +61,24 @@ def handle_events():
             elif event.key == SDLK_LSHIFT:
                 mariorun = False
 
-
 open_canvas(SCREENW, SCREENH)
 
 mario = Mario.Mario()
 gamemap = mymap.Map()
+mush = Monster.Mushroom()
+rockets = [Monster.Rocket() for i in range(5)]
 
 Play = True
 
 while Play:
     handle_events()
+
+    result = round(time.time() - begin)
+    if result % 5 == 0:
+        for rocket in rockets:
+            x, y = mario.get_marioPos()
+            gen = rocket.generate_rocket(x, y)
+            if gen: break
 
     clear_canvas()
 
@@ -110,6 +121,14 @@ while Play:
 
     else:
         mario.idle_draw()
+
+    mush.move_mush()
+    for roc in rockets:
+        roc.move_rocket()
+
+    mush.draw_mush()
+    for roc in rockets:
+        roc.draw_rocket()
     update_canvas()
 
     delay(0.1)
