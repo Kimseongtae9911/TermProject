@@ -1,40 +1,13 @@
 from pico2d import *
+import MakeMap as mymap
+import Character as Mario
 import math
 
 mariodir = 0
 mariorun = False
 mariojump = False
 jumpcnt = 0
-
-class Mario:
-    def __init__(self):
-        self.image = load_image('Mario.png')
-        self.frame = 1
-        self.start = 0
-        self.x = 300; self.y = 90
-
-    def right_move_draw(self):
-        self.start = 32
-        self.image.clip_draw(self.start + self.frame * 15, 34, 16, 16, self.x, self.y, 48, 48)
-
-    def left_move_draw(self):
-        self.start = 32
-        self.image.clip_draw(self.start + self.frame * 15, 34, 16, 16, self.x, self.y, 48, 48)
-
-    def idle_draw(self):
-        self.start = 0
-        self.image.clip_draw(self.start, 34, 16, 16, self.x, self.y, 48, 48)
-
-    def jump_draw(self):
-        self.start = 16 * 7
-        self.image.clip_draw(self.start, 34, 16, 16, self.x, self.y, 48, 48)
-
-    def move_right(self):
-        self.x += 5
-        self.frame = (self.frame + 1) % 4
-    def move_left(self):
-        self.x -=5
-        self.frame = (self.frame + 1) % 4
+SCREENW = 1280; SCREENH = 800
 
 def handle_events():
     global Play
@@ -92,9 +65,10 @@ def jump():
     else:
         jumpcnt += 1
 
-open_canvas()
+open_canvas(SCREENW, SCREENH)
 
-mario = Mario()
+mario = Mario.Mario()
+gamemap = mymap.Map()
 
 Play = True
 
@@ -102,6 +76,8 @@ while Play:
     handle_events()
 
     clear_canvas()
+
+    gamemap.draw(1)
     if mariodir == 1:
         if mariorun:
             mario.move_right()
