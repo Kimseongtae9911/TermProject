@@ -1,6 +1,4 @@
 from pico2d import *
-from Character import startx
-
 
 SCREENW = 1280; SCREENH = 800
 ratio = 237 / SCREENH
@@ -23,7 +21,14 @@ class Map:
         else:
             self.image1.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
             pass
-    def update(self):
-        self.camerax = startx
-        if self.camerax + width >= 3375:
+
+    def Rightupdate(self, x):
+        if x + width >= 3375:
             self.camerax = 3375 - width
+        else:
+            self.camerax = x
+
+    def Leftupdate(self, x):
+        if x < 0:
+            return
+        self.camerax = x

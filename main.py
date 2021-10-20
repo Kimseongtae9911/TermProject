@@ -77,9 +77,10 @@ while Play:
 
     clear_canvas()
 
-    gamemap.update()
+
     gamemap.draw(1)
     if mariodir == 1:
+        gamemap.Rightupdate(mario.map_pos())
         if mariorun:
             mario.move_right()
             mario.move_right()
@@ -88,6 +89,7 @@ while Play:
         mario.right_move_draw()
 
     elif mariodir == 2:
+        gamemap.Leftupdate(mario.map_pos())
         if mariorun:
             mario.move_left()
             mario.move_left()
