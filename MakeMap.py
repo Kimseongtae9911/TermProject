@@ -5,10 +5,12 @@ ratio = 237 / SCREENH
 width = round(SCREENW * ratio)
 
 class Map:
+    image1 = None
     def __init__(self):
-        self.image1 = load_image('Resource\Map1_Fix1.png')
-        self.image2 = load_image('Resource\Map2.png')
-        self.image3 = load_image('Resource\Map3.png')
+        if(Map.image1 == None):
+            Map.image1 = load_image('Resource\Map1_Fix1.png')
+            Map.image2 = load_image('Resource\Map2.png')
+            Map.image3 = load_image('Resource\Map3.png')
         self.camerax = 0
         self.i = 0
         pass

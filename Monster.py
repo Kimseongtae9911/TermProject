@@ -3,8 +3,10 @@ from pico2d import *
 mushsizex = mushsizey = 50
 rocketsizex = 50; rocketsizey = 30
 class Mushroom:
+    image = None
     def __init__(self):
-        self.image = load_image('Resource\MushroomMonster.png')
+        if Mushroom.image == None:
+            self.image = load_image('Resource\MushroomMonster.png')
         self.frame = 0
         self.x = 800; self.y = 125
     def draw_mush(self):
@@ -15,8 +17,10 @@ class Mushroom:
         self.frame = (self.frame + 1) % 2
 
 class Rocket:
+    image = None
     def __init__(self):
-        self.rocket = load_image('Resource\RocketMonster.png')
+        if Rocket.image == None:
+            self.rocket = load_image('Resource\RocketMonster.png')
         self.frame = 0
         self.x = 0;
         self.y = 0

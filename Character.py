@@ -5,9 +5,11 @@ mariosizey = 55
 startx = 0
 
 class Mario:
+    image = None
     def __init__(self):
-        self.image = load_image('Resource\Mario.png')
-        self.l_image = load_image('Resource\Mario_left.png')
+        if Mario.image == None:
+            Mario.image = load_image('Resource\Mario.png')
+            Mario.l_image = load_image('Resource\Mario_left.png')
         self.frame = 1
         self.start = 0
         self.x = 300; self.y = 125
