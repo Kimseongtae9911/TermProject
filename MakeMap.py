@@ -16,7 +16,7 @@ class Map:
             for i in range(0, 10):
                 for j in range(0, 255):
                     if i == 0 or i == 1:
-                        if j == 70 or 71 or 87 or 88 or 89 or 154 or 155:
+                        if j == 70 or j == 71 or j == 87 or j == 88 or j == 89 or j == 154 or j == 155:
                             Map.tile1[j][i] = 0
                         else:
                             Map.tile1[j][i] = 1
@@ -27,11 +27,11 @@ class Map:
     def draw(self, i):
         if i == 1:
             self.i = 1
-            # self.image1.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
+            self.image1.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
             for i in range(0, 10):
                 for j in range(0, 255):
                     if Map.tile1[j][i] == 1:
-                        self.Basetile.clip_draw(0, 0, 15, 16, j * 15, i * 16, 50, 50)
+                        self.Basetile.clip_draw(0, 0, 15, 16, j * 50, i * 50 + 25, 50, 50)
         elif i == 2:
             self.i = 2
             self.image1.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
