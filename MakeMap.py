@@ -21,18 +21,18 @@ class Map:
                         else:
                             Map.tile1[j][i] = 1
         self.camerax = 0
-        self.i = 0
+        Map.i = 0
         pass
 
-    def draw(self, i):
-        if i == 1:
+    def draw(self):
+        if Map.i == 1:
             self.i = 1
             self.image1.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
             for i in range(0, 10):
                 for j in range(0, 255):
                     if Map.tile1[j][i] == 1:
                         self.Basetile.clip_draw(0, 0, 15, 16, j * 50, i * 50 + 25, 50, 50)
-        elif i == 2:
+        elif Map.i == 2:
             self.i = 2
             self.image1.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
             pass
@@ -54,4 +54,7 @@ class Map:
         else:
             if x >= (SCREENW / 2) and (SCREENW / 2 + startx + x) <= 2560:
                 self.camerax = startx
+
+    def update(self):
+        pass
 

@@ -9,12 +9,10 @@ import game_world
 from Character import Mario
 from MakeMap import Map
 
-Play = True
 name = "MainState"
 
 mario = None
 mymap = None
-
 
 def enter():
     global mario, mymap
