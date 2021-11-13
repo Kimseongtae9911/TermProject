@@ -50,7 +50,10 @@ def handle_events():
 
 def update():
     for game_object in game_world.all_objects():
-        game_object.update()
+        if game_object == mymap:
+            game_object.update(mario)
+        else:
+            game_object.update()
 
 
 def draw():
