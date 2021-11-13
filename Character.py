@@ -5,13 +5,12 @@ import game_framework
 SCREENW = 1280
 mariosizex = 55
 mariosizey = 55
-startx = 0
 
 PIXEL_PER_METER = (10.0 / 0.3)
-RUN_SPEED_MPM = (20 * 1000.0 / 60.0)
+RUN_SPEED_MPM = (25 * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED = (RUN_SPEED_MPS * PIXEL_PER_METER)
-DASH_SPEED = RUN_SPEED + 50
+DASH_SPEED = RUN_SPEED + 100
 JUMP_SPEED = RUN_SPEED + 10
 
 TIMER_PER_ACTION = 1.0
@@ -59,31 +58,16 @@ class IdleState:
         pass
 
     def do(mario):
-        if mario.jump:
-            if mario.y > 200:
-                mario.jumpdir = -1
-            elif mario.y <= 50:
-                mario.jumpdir = 0
-                mario.y = 50
-
-            mario.y += (mario.jumpdir * JUMP_SPEED) * game_framework.frame_time
+        pass
 
 
     def draw(mario):
         if mario.dir == 1:
-            if mario.jump:
-                mario.start = 16 * 7
-                mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
-            else:
-                mario.start = 0
-                mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
+            mario.start = 0
+            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
         else:
-            if mario.jump:
-                mario.start = 16 * 7
-                mario.l_image.clip_draw(mario.start, 0, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
-            else:
-                mario.start = 0
-                mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
+            mario.start = 0
+            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
 
 
 class RunState:
@@ -96,7 +80,8 @@ class RunState:
             mario.velocity -= RUN_SPEED
         elif event == LEFT_UP:
             mario.velocity += RUN_SPEED
-        mario.dir = clamp(-1, mario.velocity, 1)
+        if event != STOP:
+            mario.dir = clamp(-1, mario.velocity, 1)
         if mario.acc == 0 and event != SHIFT_UP:
             mario.acc = mario.velocity
 
@@ -106,19 +91,33 @@ class RunState:
         pass
 
     def do(mario):
+        global mapx
+        if mario.velocity == 0:
+            mario.add_event(STOP)
+
         mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
+
         if mario.dir == 1:
             if mario.acc > 0:
-                mario.acc -= 500 * game_framework.frame_time
+                mario.acc -= 200 * game_framework.frame_time
             elif mario.acc < 0:
                 mario.acc = 0
         else:
             if mario.acc < 0:
-                mario.acc += 500 * game_framework.frame_time
+                mario.acc += 200 * game_framework.frame_time
             elif mario.acc > 0:
                 mario.acc = 0
-        mario.x = clamp(25, mario.x, 1600 - 25)
+
+        if mario.x > SCREENW - 300:
+            mario.mapx += (mario.x - (SCREENW - 300))
+        elif mario.x < 200 and mario.mapx > 0:
+            mario.mapx -= 200 - mario.x
+
+        if mario.mapx > 0:
+            mario.x = clamp(200, mario.x, SCREENW - 300)
+        else:
+            mario.x = clamp(int(mariosizex / 2), mario.x, SCREENW - 300)
 
     def draw(mario):
         if mario.dir == 1:
@@ -159,19 +158,28 @@ class DashState:
         pass
 
     def do(mario):
-        mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-        mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
+        mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * (game_framework.frame_time * 2)) % 4
+        mario.x += (mario.velocity - mario.acc) * (game_framework.frame_time)
         if mario.velocity > 0:
             if mario.acc > 0:
-                mario.acc -= 500 * game_framework.frame_time
+                mario.acc -= 200 * game_framework.frame_time
             else:
                 mario.acc = 0
         elif mario.velocity < 0:
             if mario.acc < 0:
-                mario.acc += 500 * game_framework.frame_time
+                mario.acc += 200 * game_framework.frame_time
             else:
                 mario.acc = 0
-        mario.x = clamp(25, mario.x, 1600 - 25)
+
+        if mario.x > SCREENW - 300:
+            mario.mapx += (mario.x - (SCREENW - 300))
+        elif mario.x < 200 and mario.mapx > 0:
+            mario.mapx -= 200 - mario.x
+
+        if mario.mapx > 0:
+            mario.x = clamp(200, mario.x, SCREENW - 300)
+        else:
+            mario.x = clamp(int(mariosizex / 2), mario.x, SCREENW - 300)
 
     def draw(mario):
         if mario.dir == 1:
@@ -212,7 +220,16 @@ class AccState:
             elif mario.acc < mario.velocity - 100:
                 mario.acc = mario.velocity = 0
                 mario.add_event(STOP)
-        mario.x = clamp(25, mario.x, 1600 - 25)
+
+        if mario.x > SCREENW - 300:
+            mario.mapx += (mario.x - (SCREENW - 300))
+        elif mario.x < 200 and mario.mapx > 0:
+            mario.mapx -= 200 - mario.x
+
+        if mario.mapx > 0:
+            mario.x = clamp(200, mario.x, SCREENW - 300)
+        else:
+            mario.x = clamp(int(mariosizex / 2), mario.x, SCREENW - 300)
 
     def draw(mario):
         if mario.dir == 1:
@@ -223,27 +240,85 @@ class AccState:
             mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
 
 
+class JumpState:
+    def enter(mario, event):
+        if event == RIGHT_DOWN:
+            mario.velocity += RUN_SPEED
+        elif event == LEFT_DOWN:
+            mario.velocity -= RUN_SPEED
+        elif event == RIGHT_UP:
+            mario.velocity -= RUN_SPEED
+        elif event == LEFT_UP:
+            mario.velocity += RUN_SPEED
+        pass
+
+    def exit(mario, event):
+        # if event == RIGHT_DOWN:
+        #     mario.add_event()
+        pass
+
+    def do(mario):
+        if mario.jump:
+            if mario.y > 400:
+                mario.jumpdir = -1
+            elif mario.y < 125:
+                mario.jumpdir = 0
+                mario.y = 125
+                mario.jump = False
+                mario.add_event(STOP)
+            elif mario.y == 125:
+                mario.jumpdir = 1
+
+            if mario.jumpdir == 1:
+                mario.y += (mario.jumpdir * JUMP_SPEED) * (game_framework.frame_time * 1.5)
+                mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
+            elif mario.jumpdir == -1:
+                mario.y += (mario.jumpdir * JUMP_SPEED) * (game_framework.frame_time * 2)
+                mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
+
+            if mario.x > SCREENW - 300:
+                mario.mapx += (mario.x - (SCREENW - 300))
+            elif mario.x < 200 and mario.mapx > 0:
+                mario.mapx -= 200 - mario.x
+
+            if mario.mapx > 0:
+                mario.x = clamp(200, mario.x, SCREENW - 300)
+            else:
+                mario.x = clamp(int(mariosizex / 2), mario.x, SCREENW - 300)
+
+    def draw(mario):
+        if mario.dir == 1:
+            mario.start = 16 * 7
+            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
+        else:
+            mario.start = 16 * 7
+            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mariosizex, mariosizey)
+
 next_state_table = {
-    DashState: {SHIFT_UP: RunState, SHIFT_DOWN: DashState,
-                RIGHT_DOWN: DashState, LEFT_DOWN: DashState, LEFT_UP: AccState, RIGHT_UP: AccState,
-                SPACE: DashState},
+    DashState: {SHIFT_UP: RunState, SHIFT_DOWN: DashState, RIGHT_DOWN: DashState, LEFT_DOWN: DashState,
+                LEFT_UP: AccState, RIGHT_UP: AccState, SPACE: JumpState},
+
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-                SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: IdleState},
+                SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: JumpState},
+
     RunState: {RIGHT_UP: AccState, LEFT_UP: AccState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
-               SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: RunState,
-               STOP: IdleState},
+               SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: JumpState, STOP: IdleState},
+
     AccState: {RIGHT_UP: AccState, LEFT_UP: AccState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-               SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: AccState
-    }
+               SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: AccState},
+
+    JumpState: {RIGHT_UP: JumpState, LEFT_UP: JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN: JumpState,
+               SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState}
 }
 
 
 class Mario:
     image = None
-
+    life = 3
     def __init__(self):
-        self.image = load_image('Resource\Mario.png')
-        self.l_image = load_image('Resource\Mario_left.png')
+        if Mario.image == None:
+            Mario.image = load_image('Resource\Mario.png')
+            Mario.l_image = load_image('Resource\Mario_left.png')
         self.x, self.y = 300, 125
         self.frame = 1
         self.dir = 1
@@ -253,13 +328,8 @@ class Mario:
         self.cur_state.enter(self, None)
         self.acc = 0.0
         self.jump = False
-        self.jumpdir = 0
-
-        self.start = 0
-        self.startx = 0
-        self.marioRight = True
-        self.marioLeft = True
-        self.jumpdir = False; self.jumpstart = 0; self.jumping = False
+        self.jumpdir = 1
+        self.mapx = 0
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -280,7 +350,7 @@ class Mario:
 
     def draw(self):
         self.cur_state.draw(self)
-        debug_print('Velocity : ' + str(self.velocity) + '  ACC : ' + str(self.acc) + '  Dir: ' + str(self.dir))
+        debug_print('Velocity : ' + str(self.velocity) + '  y : ' + str(self.y) + '  Dir: ' + str(self.dir))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -290,76 +360,9 @@ class Mario:
             else:
                 self.add_event(key_event)
 
-    def Rjump_draw(self):
-        self.start = 16 * 7
-        self.image.clip_draw(self.start, 34, 16, 16, self.x, self.y, mariosizex, mariosizey)
-
-    def Ljump_draw(self):
-        self.start = 16 * 7
-        self.l_image.clip_draw(self.start, 0, 16, 16, self.x, self.y, mariosizex, mariosizey)
-
-    def jump_left(self):
-        if self.jumping == False and self.jumpstart == 0:
-            self.jumpstart = self.y
-            self.jumpdir = True
-            self.jumping = True
-        else:
-            if self.jumping:
-                if self.jumpdir:
-                    self.y += 25
-                    self.x -= 20
-                    if self.y - self.jumpstart >= 105:
-                        self.jumpdir = False
-                else:
-                    self.y -= 25
-                    self.x -= 20
-                    if self.y <= self.jumpstart:
-                        self.y = self.jumpstart
-                        self.jumpstart = 0
-                        self.jumping = False
-        return self.jumping
-
-    def jump_right(self):
-        if self.jumping == False and self.jumpstart == 0:
-            self.jumpstart = self.y
-            self.jumpdir = True
-            self.jumping = True
-        else:
-            if self.jumping:
-                if self.jumpdir:
-                    self.y += 25
-                    self.x += 20
-                    if self.y - self.jumpstart >= 105:
-                        self.jumpdir = False
-                else:
-                    self.y -= 25
-                    self.x += 20
-                    if self.y <= self.jumpstart:
-                        self.y = self.jumpstart
-                        self.jumpstart = 0
-                        self.jumping = False
-        return self.jumping
-
-    def idle_jump(self):
-        if self.jumpstart == 0 and self.jumping == False:
-            self.jumpstart = self.y
-            self.jumpdir = True
-            self.jumping = True
-        if self.jumping:
-            if self.jumpdir:
-                self.y += 25
-                if self.y - self.jumpstart >= 105:
-                    self.jumpdir = False
-            else:
-                self.y -= 25
-                if self.y <= self.jumpstart:
-                    self.y = self.jumpstart
-                    self.jumpstart = 0
-                    self.jumping = False
-        return self.jumping
-
-    def map_pos(self):
-        return startx
-
     def get_marioPos(self):
-        return self.x, self.y
+        return self.x
+
+    def get_MapX(self):
+        return self.mapx
+
