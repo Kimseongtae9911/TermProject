@@ -98,6 +98,7 @@ class Map:
             self.num = 1
             for i in range(0, 16):
                 for j in range(0, 255):
+                    draw_rectangle(*self.get_Check_Box(i, j))
                     if Map.tile1[j][i] == 1 and i != 1:
                         self.Basetile.clip_draw(0, 0, 16, 32,
                                                 (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
@@ -172,6 +173,9 @@ class Map:
             self.camerax = int(mario.get_MapX())
         elif mario.get_marioPos() == 200:
             self.camerax = int(mario.get_MapX())
-        pass
+
+    def get_Check_Box(self, i, j):
+        return (j * self.blocksize) - self.camerax, i * self.blocksize + self.blocksize, \
+               (j * self.blocksize) + self.blocksize - self.camerax, i * self.blocksize
 
 

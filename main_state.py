@@ -47,6 +47,21 @@ def handle_events():
         else:
             mario.handle_event(event)
 
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_Check_Box()
+    if(b == mymap):
+        for i in range(0, 16):
+            for j in range(0, 255):
+                left_b, bottom_b, right_b, top_b = b.get_Check_Box(i, j)
+    else:
+        left_b, bottom_b, right_b, top_b = b.get_Check_Box()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    return True
 
 def update():
     for game_object in game_world.all_objects():
@@ -55,6 +70,12 @@ def update():
         else:
             game_object.update()
 
+    # for i in range(0, 16):
+    #     for j in range(0, 255):
+    #         if(collide(mario, Map.tile1[j][i])):
+    #             pass
+    if(collide(mario, mymap)):
+        pass
 
 def draw():
     clear_canvas()
