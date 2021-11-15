@@ -7,10 +7,11 @@ width = round(SCREENW * ratio)
 
 class Map:
     image2 = None
-    tile1 = [[0 for col in range(16)] for row in range(255)]
+    tile1 = [[0 for _ in range(16)] for _ in range(255)]
     num = 1
+    blocksize = 50
+    camerax = 0
     def __init__(self):
-        self.blocksize = 50
         if(Map.image2 == None):
             Map.image2 = load_image('Resource\Map2.png')
             Map.image3 = load_image('Resource\Map3.png')
@@ -98,7 +99,7 @@ class Map:
             self.num = 1
             for i in range(0, 16):
                 for j in range(0, 255):
-                    draw_rectangle(*self.get_Check_Box(i, j))
+                    # draw_rectangle(*self.get_Check_Box(i, j))
                     if Map.tile1[j][i] == 1 and i != 1:
                         self.Basetile.clip_draw(0, 0, 16, 32,
                                                 (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
@@ -168,6 +169,7 @@ class Map:
             self.image3.clip_draw(self.camerax, 0, width, 237, SCREENW / 2, SCREENH / 2, SCREENW, SCREENH)
             pass
 
+        draw_rectangle(*self.get_Check_Box(1, 0))
     def update(self, mario):
         if mario.get_marioPos() == SCREENW - 300:
             self.camerax = int(mario.get_MapX())
@@ -175,7 +177,7 @@ class Map:
             self.camerax = int(mario.get_MapX())
 
     def get_Check_Box(self, i, j):
-        return (j * self.blocksize) - self.camerax, i * self.blocksize + self.blocksize, \
-               (j * self.blocksize) + self.blocksize - self.camerax, i * self.blocksize
+        return (j * self.blocksize) - self.camerax, i * self.blocksize, \
+               (j * self.blocksize) + self.blocksize - self.camerax, i * self.blocksize + self.blocksize
 
 

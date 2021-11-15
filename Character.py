@@ -1,10 +1,11 @@
 from pico2d import *
 import game_world
 import game_framework
+import loading_state
 
 SCREENW = 1280
 
-PIXEL_PER_METER = (10.0 / 0.3)
+PIXEL_PER_METER = (15.0 / 0.3)
 RUN_SPEED_MPM = (25 * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -18,10 +19,10 @@ FRAMES_PER_ACTION = 4
 history = []
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, \
-    SHIFT_DOWN, SHIFT_UP, DEBUG_KEY, SPACE, STOP = range(9)
+    SHIFT_DOWN, SHIFT_UP, DEBUG_KEY, SPACE, STOP, FALL, DIE = range(11)
 
 event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP',
-    'SHIFT_DOWN', 'SHIFT_UP', 'DEBUG_KEY', 'SPACE', 'STOP']
+    'SHIFT_DOWN', 'SHIFT_UP', 'DEBUG_KEY', 'SPACE', 'STOP', 'FALL', 'DIE']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_SPACE): SPACE,
@@ -292,21 +293,77 @@ class JumpState:
             mario.start = 16 * 7
             mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
 
+
+class FallState:
+    def enter(mario, event):
+        pass
+
+    def exit(mario, event):
+        pass
+
+    def do(mario):
+        mario.y -= JUMP_SPEED * (game_framework.frame_time * 1.5)
+        if mario.y <= 50:
+            mario.add_event(DIE)
+        pass
+
+
+    def draw(mario):
+        if mario.dir == 1:
+            mario.start = 16 * 7
+            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+        else:
+            mario.start = 16 * 7
+            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+
+class DieState:
+    def enter(mario, event):
+        mario.dir == 1
+        if mario.y >= 150:
+            mario.dir = -1
+
+    def exit(mario, event):
+        pass
+
+    def do(mario):
+        if mario.dir == 1:
+            mario.y += 100 * (game_framework.frame_time)
+        elif mario.dir == -1:
+            mario.y -= JUMP_SPEED * (game_framework.frame_time)
+
+        if mario.y >= 150:
+            mario.dir = -1
+        elif mario.y <= -50:
+            mario.life -= 1
+            # game_framework.change_state(loading_state)
+            game_framework.push_state(loading_state)
+
+    def draw(mario):
+        mario.start = 16
+        mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+
+
 next_state_table = {
     DashState: {SHIFT_UP: RunState, SHIFT_DOWN: DashState, RIGHT_DOWN: DashState, LEFT_DOWN: DashState,
-                LEFT_UP: AccState, RIGHT_UP: AccState, SPACE: JumpState},
+                LEFT_UP: AccState, RIGHT_UP: AccState, SPACE: JumpState, FALL: FallState, DIE: DieState},
 
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-                SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: JumpState},
+                SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: JumpState, FALL: FallState, DIE: DieState},
 
     RunState: {RIGHT_UP: AccState, LEFT_UP: AccState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
-               SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: JumpState, STOP: IdleState},
+               SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: JumpState, STOP: IdleState, FALL: FallState, DIE: DieState},
 
     AccState: {RIGHT_UP: AccState, LEFT_UP: AccState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-               SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: AccState},
+               SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: AccState, FALL: FallState, DIE: DieState},
 
     JumpState: {RIGHT_UP: JumpState, LEFT_UP: JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN: JumpState,
-               SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState}
+               SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState, FALL: FallState, DIE: DieState},
+
+    FallState: {RIGHT_UP: FallState, LEFT_UP: FallState, RIGHT_DOWN: FallState, LEFT_DOWN: FallState,
+                SHIFT_DOWN: FallState, SHIFT_UP: FallState, SPACE: FallState, FALL: FallState, DIE: DieState},
+
+    DieState: {RIGHT_UP: DieState, LEFT_UP: DieState, RIGHT_DOWN: DieState, LEFT_DOWN: DieState,
+                SHIFT_DOWN: DieState, SHIFT_UP: DieState, SPACE: DieState, FALL: DieState, DIE: DieState}
 }
 
 

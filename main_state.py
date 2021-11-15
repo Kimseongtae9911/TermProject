@@ -2,6 +2,7 @@ import random
 import json
 import os
 
+from Character import *
 from pico2d import *
 import game_framework
 import game_world
@@ -63,19 +64,29 @@ def collide(a, b):
 
     return True
 
+def collide_map(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_Check_Box()
+    for j in range(0, 254):
+        left_b, bottom_b, right_b, top_b = b.get_Check_Box(1, j)
+        left_c, bottom_c, right_c, top_c = b.get_Check_Box(1, j + 1)
+        if bottom_a + 2 >= top_b and Map.tile1[j][1] == 0 and left_a + 10 > left_b and right_a < right_b:
+            return True
+        elif bottom_a + 2 >= top_b and Map.tile1[j][1] == 0 and Map.tile1[j+1][1] == 0 and left_a + 10 > left_b and right_a < right_c:
+            return True
+
+    return False
+
+
 def update():
+    global mario, mymap
     for game_object in game_world.all_objects():
         if game_object == mymap:
             game_object.update(mario)
         else:
             game_object.update()
 
-    # for i in range(0, 16):
-    #     for j in range(0, 255):
-    #         if(collide(mario, Map.tile1[j][i])):
-    #             pass
-    if(collide(mario, mymap)):
-        pass
+    if(collide_map(mario, mymap)):
+        mario.add_event(9)
 
 def draw():
     clear_canvas()
