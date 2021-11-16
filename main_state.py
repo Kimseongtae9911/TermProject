@@ -9,18 +9,20 @@ import game_world
 
 from Character import Mario
 from MakeMap import Map
+from Rocket import Rocket
 
 name = "MainState"
 
 mario = None
 mymap = None
 
+
 def enter():
     global mario, mymap
     mario = Mario()
     mymap = Map()
     game_world.add_object(mymap, 0)
-    game_world.add_object(mario, 1)
+    game_world.add_object(mario, 2)
 
 
 def exit():
@@ -48,6 +50,7 @@ def handle_events():
         else:
             mario.handle_event(event)
 
+
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_Check_Box()
     if(b == mymap):
@@ -63,6 +66,7 @@ def collide(a, b):
     if bottom_a > top_b: return False
 
     return True
+
 
 def collide_map(a, b):
     left_a, bottom_a, right_a, top_a = a.get_Check_Box()
@@ -84,6 +88,11 @@ def update():
             game_object.update(mario)
         else:
             game_object.update()
+
+        if collide(mario, game_object):
+            if game_object != mario:
+                game_world.remove_object(game_object)
+
 
     if(collide_map(mario, mymap)):
         mario.add_event(9)

@@ -2,8 +2,10 @@ from pico2d import *
 import game_world
 import game_framework
 import loading_state
+from Rocket import Rocket
 
 SCREENW = 1280
+mapx = 0
 
 PIXEL_PER_METER = (15.0 / 0.3)
 RUN_SPEED_MPM = (25 * 1000.0 / 60.0)
@@ -386,11 +388,20 @@ class Mario:
         self.jumpdir = 1
         self.mapx = 0
         self.mariosizex = self.mariosizey = 55
+        self.timer = 500
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def update(self):
+        global mapx
+        self.timer -= 5
+        mapx = self.mapx
+        if self.timer <= 0:
+            rocket = Rocket(SCREENW, self.y)
+            game_world.add_object(rocket, 1)
+            self.timer = 500
+
         self.cur_state.do(self)
         if len(self.event_que) > 0:
             event = self.event_que.pop()
@@ -425,3 +436,6 @@ class Mario:
 
     def get_Check_Box(self):
         return self.x - self.mariosizex // 2, self.y - self.mariosizey // 2, self.x + (self.mariosizex // 2), self.y + self.mariosizey // 2
+
+def get_Map():
+    return mapx

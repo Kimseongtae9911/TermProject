@@ -170,6 +170,7 @@ class Map:
             pass
 
         draw_rectangle(*self.get_Check_Box(1, 0))
+
     def update(self, mario):
         if mario.get_marioPos() == SCREENW - 300:
             self.camerax = int(mario.get_MapX())
