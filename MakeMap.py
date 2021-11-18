@@ -27,6 +27,7 @@ class Map:
             Map.Grass3 = load_image('Resource\Tile\grass(80x16).png')
             Map.Qtile = load_image('Resource\Tile\questiontile.png')
             Map.Btile = load_image('Resource\Tile\Bricktile.png')
+            Map.Bltile = load_image('Resource\Tile\Blocktile.png')
             for i in range(0, 16):
                 for j in range(0, 255):
                     if i == 0 or i == 1:
@@ -89,7 +90,7 @@ class Map:
                         elif j == 48 or j == 59:
                             Map.tile1[j][i] = 5
                     elif i == 9:
-                        if j == 23:
+                        if j == 23:  # questiontile
                             Map.tile1[j][i] = 6
         self.camerax = 0
         pass
@@ -99,7 +100,6 @@ class Map:
             self.num = 1
             for i in range(0, 16):
                 for j in range(0, 255):
-                    # draw_rectangle(*self.get_Check_Box(i, j))
                     if Map.tile1[j][i] == 1 and i != 1:
                         self.Basetile.clip_draw(0, 0, 16, 32,
                                                 (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
@@ -134,6 +134,11 @@ class Map:
                                                   (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
                                                   i * self.blocksize + (self.blocksize // 2), self.blocksize,
                                                   self.blocksize)
+                    elif Map.tile1[j][i] == 8:
+                        self.Bltile.clip_draw(0, 0, 16, 16,
+                                             (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
+                                             i * self.blocksize + (self.blocksize // 2), self.blocksize,
+                                             self.blocksize)
                     elif Map.tile1[j][i] == 9:
                         self.SmallMountain.clip_draw(0, 0, 48, 32,
                                                    (j * self.blocksize) + ((self.blocksize * 3) // 2) - self.camerax,
@@ -170,6 +175,10 @@ class Map:
             pass
 
         draw_rectangle(*self.get_Check_Box(1, 0))
+        for i in range(0, 16):
+            for j in range(0, 254):
+                 if Map.tile1[j][i] == 6:
+                    draw_rectangle(*self.get_Check_Box(i, j))
 
     def update(self, mario):
         if mario.get_marioPos() == SCREENW - 300:

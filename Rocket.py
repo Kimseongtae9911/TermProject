@@ -2,6 +2,7 @@ from pico2d import *
 import Character
 
 import game_world
+import main_state
 import game_framework
 
 SCREENW = 1280
@@ -27,7 +28,14 @@ class Rocket:
         if self.x < 25:
             game_world.remove_object(self)
 
+        if main_state.collide(main_state.mario, self):
+            game_world.remove_object(self)
+            if main_state.mario.cur_life >= 2:
+                main_state.mario.cur_life -= 1
+            elif main_state.mario.cur_life == 1:
+                main_state.mario.cur_life -= 1
+                main_state.mario.add_event(10)
         self.camerax = Character.get_Map()
 
     def get_Check_Box(self):
-        return self.x - self.rocketsizex // 2, self.y - self.rocketsizey // 2, self.x + (self.rocketsizex // 2), self.y + self.rocketsizey // 2
+        return self.x - self.rocketsizex // 2 - self.camerax, self.y - self.rocketsizey // 2, self.x + (self.rocketsizex // 2) - self.camerax, self.y + self.rocketsizey // 2

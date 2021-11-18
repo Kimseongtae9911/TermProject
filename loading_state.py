@@ -14,6 +14,7 @@ image = None
 numbers = None
 timer = 1000
 
+
 def enter():
     global image, numbers, timer
     image = load_image('Resource\loading.png')
@@ -50,7 +51,7 @@ def update():
         timer -= 1
 
     if timer <= 0:
-        game_framework.change_state(main_state)
+        game_framework.push_state(main_state)
     pass
 
 def draw():

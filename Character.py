@@ -2,6 +2,7 @@ from pico2d import *
 import game_world
 import game_framework
 import loading_state
+import main_state
 from Rocket import Rocket
 
 SCREENW = 1280
@@ -21,10 +22,10 @@ FRAMES_PER_ACTION = 4
 history = []
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, \
-    SHIFT_DOWN, SHIFT_UP, DEBUG_KEY, SPACE, STOP, FALL, DIE = range(11)
+    SHIFT_DOWN, SHIFT_UP, DEBUG_KEY, SPACE, STOP, FALL, DIE, COLLIDE = range(12)
 
 event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP',
-    'SHIFT_DOWN', 'SHIFT_UP', 'DEBUG_KEY', 'SPACE', 'STOP', 'FALL', 'DIE']
+    'SHIFT_DOWN', 'SHIFT_UP', 'DEBUG_KEY', 'SPACE', 'STOP', 'FALL', 'DIE', 'COLLIDE']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_SPACE): SPACE,
@@ -64,11 +65,19 @@ class IdleState:
 
     def draw(mario):
         if mario.dir == 1:
-            mario.start = 0
-            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 0
+                mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 0
+                mario.image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
         else:
-            mario.start = 0
-            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 0
+                mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 0
+                mario.l_image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
 
 
 class RunState:
@@ -120,13 +129,22 @@ class RunState:
         else:
             mario.x = clamp(int(mario.mariosizex / 2), mario.x, SCREENW - 300)
 
+
     def draw(mario):
         if mario.dir == 1:
-            mario.start = 32
-            mario.image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 32
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
         else:
-            mario.start = 32
-            mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 32
+                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21
+                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
 
 
 class DashState:
@@ -184,11 +202,19 @@ class DashState:
 
     def draw(mario):
         if mario.dir == 1:
-            mario.start = 32
-            mario.image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 32
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
         else:
-            mario.start = 32
-            mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 32
+                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21
+                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
 
 
 class AccState:
@@ -234,11 +260,19 @@ class AccState:
 
     def draw(mario):
         if mario.dir == 1:
-            mario.start = 16 * 6
-            mario.image.clip_draw(mario.start, 34, 15, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 16 * 6
+                mario.image.clip_draw(mario.start, 34, 15, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21 * 5
+                mario.image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
         else:
-            mario.start = 16 * 6
-            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 16 * 6
+                mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21 * 5
+                mario.l_image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
 
 
 class JumpState:
@@ -249,13 +283,17 @@ class JumpState:
             mario.velocity -= RUN_SPEED
         elif event == RIGHT_UP:
             mario.velocity -= RUN_SPEED
+            if mario.velocity == 100:
+                mario.velocity = 0
         elif event == LEFT_UP:
             mario.velocity += RUN_SPEED
-        pass
+            if mario.velocity == -100:
+                mario.velocity = 0
+        elif event == COLLIDE:
+            mario.jumpdir = -1
+        mario.dir = clamp(-1, mario.velocity, 1)
 
     def exit(mario, event):
-        # if event == RIGHT_DOWN:
-        #     mario.add_event()
         pass
 
     def do(mario):
@@ -267,6 +305,7 @@ class JumpState:
                 mario.y = 125
                 mario.jump = False
                 mario.add_event(STOP)
+
             elif mario.y == 125:
                 mario.jumpdir = 1
 
@@ -289,11 +328,19 @@ class JumpState:
 
     def draw(mario):
         if mario.dir == 1:
-            mario.start = 16 * 7
-            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 16 * 7
+                mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21 * 6
+                mario.image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
         else:
-            mario.start = 16 * 7
-            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 16 * 7
+                mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21 * 6
+                mario.l_image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
 
 
 class FallState:
@@ -312,15 +359,26 @@ class FallState:
 
     def draw(mario):
         if mario.dir == 1:
-            mario.start = 16 * 7
-            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 16 * 7
+                mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21 * 6
+                mario.image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2,
+                                      mario.mariosizex, mario.mariosizey)
         else:
-            mario.start = 16 * 7
-            mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            if mario.cur_life <= 1:
+                mario.start = 16 * 7
+                mario.l_image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21 * 6
+                mario.l_image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2,
+                                        mario.mariosizex, mario.mariosizey)
 
 class DieState:
     def enter(mario, event):
         mario.dir == 1
+        mario.cur_life = 0
         if mario.y >= 150:
             mario.dir = -1
 
@@ -341,16 +399,17 @@ class DieState:
             game_framework.push_state(loading_state)
 
     def draw(mario):
-        mario.start = 16
-        mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
+        if mario.cur_life <= 1:
+            mario.start = 16
+            mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
 
 
 next_state_table = {
     DashState: {SHIFT_UP: RunState, SHIFT_DOWN: DashState, RIGHT_DOWN: DashState, LEFT_DOWN: DashState,
-                LEFT_UP: AccState, RIGHT_UP: AccState, SPACE: JumpState, FALL: FallState, DIE: DieState},
+                LEFT_UP: AccState, RIGHT_UP: AccState, SPACE: JumpState, FALL: FallState, DIE: DieState, STOP: IdleState},
 
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-                SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: JumpState, FALL: FallState, DIE: DieState},
+                SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: JumpState, FALL: FallState, DIE: DieState, STOP: IdleState},
 
     RunState: {RIGHT_UP: AccState, LEFT_UP: AccState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
                SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: JumpState, STOP: IdleState, FALL: FallState, DIE: DieState},
@@ -359,25 +418,28 @@ next_state_table = {
                SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: AccState, FALL: FallState, DIE: DieState},
 
     JumpState: {RIGHT_UP: JumpState, LEFT_UP: JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN: JumpState,
-               SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState, FALL: FallState, DIE: DieState},
+               SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState, FALL: FallState, DIE: DieState,
+                COLLIDE: JumpState},
 
     FallState: {RIGHT_UP: FallState, LEFT_UP: FallState, RIGHT_DOWN: FallState, LEFT_DOWN: FallState,
-                SHIFT_DOWN: FallState, SHIFT_UP: FallState, SPACE: FallState, FALL: FallState, DIE: DieState},
+                SHIFT_DOWN: FallState, SHIFT_UP: FallState, SPACE: FallState, FALL: FallState, DIE: DieState, STOP: FallState},
 
     DieState: {RIGHT_UP: DieState, LEFT_UP: DieState, RIGHT_DOWN: DieState, LEFT_DOWN: DieState,
-                SHIFT_DOWN: DieState, SHIFT_UP: DieState, SPACE: DieState, FALL: DieState, DIE: DieState}
+                SHIFT_DOWN: DieState, SHIFT_UP: DieState, SPACE: DieState, FALL: DieState, DIE: DieState, STOP: DieState, COLLIDE: DieState}
 }
 
 
 class Mario:
     image = None
     life = 3
+    cur_life = 1
+    jumpdir = 1
     def __init__(self):
         if Mario.image == None:
             Mario.image = load_image('Resource\Mario.png')
             Mario.l_image = load_image('Resource\Mario_left.png')
         self.x, self.y = 300, 125
-        self.frame = 1
+        self.frame = 0
         self.dir = 1
         self.velocity = 0
         self.event_que = []
@@ -385,7 +447,6 @@ class Mario:
         self.cur_state.enter(self, None)
         self.acc = 0.0
         self.jump = False
-        self.jumpdir = 1
         self.mapx = 0
         self.mariosizex = self.mariosizey = 55
         self.timer = 500
@@ -395,12 +456,22 @@ class Mario:
 
     def update(self):
         global mapx
+        if self.cur_life <= 1:
+            self.mariosizex = 55; self.mariosizey = 55;
+        elif self.cur_life >= 2:
+            self.mariosizex = 55; self.mariosizey = 110;
+
         self.timer -= 5
         mapx = self.mapx
         if self.timer <= 0:
             rocket = Rocket(SCREENW, self.y)
             game_world.add_object(rocket, 1)
             self.timer = 500
+
+        if self.cur_life == 0:
+            print(self.life)
+            self.add_event(DIE)
+
 
         self.cur_state.do(self)
         if len(self.event_que) > 0:
@@ -415,10 +486,17 @@ class Mario:
 
             self.cur_state.enter(self, event)
 
+        if (main_state.collide_base(self, main_state.mymap)):
+            self.add_event(9)
+        elif (main_state.collide_ques(self, main_state.mymap)):
+            self.add_event(11)
+        elif (main_state.collide_block(self, main_state.mymap)):
+            self.add_event(11)
+
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_Check_Box())
-        debug_print('Velocity : ' + str(self.velocity) + '  y : ' + str(self.y) + '  Dir: ' + str(self.dir))
+        # draw_rectangle(*self.get_Check_Box())
+        # debug_print('Velocity : ' + str(self.velocity) + '  cur_life : ' + str(self.cur_life) + '  Dir: ' + str(self.dir))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -435,7 +513,10 @@ class Mario:
         return self.mapx
 
     def get_Check_Box(self):
-        return self.x - self.mariosizex // 2, self.y - self.mariosizey // 2, self.x + (self.mariosizex // 2), self.y + self.mariosizey // 2
+        if self.cur_life <= 1:
+            return self.x - self.mariosizex // 2, self.y - self.mariosizey // 2, self.x + (self.mariosizex // 2), self.y + self.mariosizey // 2
+        else:
+            return self.x - self.mariosizex // 2, self.y - self.mariosizey // 4, self.x + (self.mariosizex // 2), self.y + self.mariosizex * 2
 
 def get_Map():
     return mapx
