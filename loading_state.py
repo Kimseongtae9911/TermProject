@@ -51,6 +51,7 @@ def update():
         timer -= 1
 
     if timer <= 0:
+        timer =1000
         game_framework.push_state(main_state)
     pass
 

@@ -62,7 +62,7 @@ class Move_RState:
         tempx, tempy = (mushroom.x - mushroom.camerax - 25) // 50, math.ceil((mushroom.y - 25) / 50)
 
         if MakeMap.Map.tile1[int(tempx)][(tempy) - 1] == 0:
-            mushroom.y -= (MOVE_SPEED + 10) * game_framework.frame_time
+            mushroom.y -= (MOVE_SPEED + 100) * game_framework.frame_time
 
         if mushroom.x < 25:
             game_world.remove_object(mushroom)

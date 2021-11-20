@@ -449,7 +449,7 @@ class Mario:
         self.jump = False
         self.mapx = 0
         self.mariosizex = self.mariosizey = 55
-        self.timer = 500
+        self.timer = 1000
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -466,7 +466,7 @@ class Mario:
         if self.timer <= 0:
             rocket = Rocket(SCREENW, self.y)
             game_world.add_object(rocket, 1)
-            self.timer = 500
+            self.timer = 1000
 
         if self.cur_life == 0:
             print(self.life)
