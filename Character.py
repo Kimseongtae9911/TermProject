@@ -485,18 +485,22 @@ class Mario:
                 exit(-1)
 
             self.cur_state.enter(self, event)
-
+        ques_collide = main_state.collide_ques(self, main_state.mymap)
         if (main_state.collide_base(self, main_state.mymap)):
             self.add_event(9)
-        elif (main_state.collide_ques(self, main_state.mymap)):
+        elif (ques_collide == 1):
             self.add_event(11)
+        elif ques_collide == 2:
+            self.add_event(STOP)
         elif (main_state.collide_block(self, main_state.mymap)):
             self.add_event(11)
 
     def draw(self):
         self.cur_state.draw(self)
         # draw_rectangle(*self.get_Check_Box())
-        # debug_print('Velocity : ' + str(self.velocity) + '  cur_life : ' + str(self.cur_life) + '  Dir: ' + str(self.dir))
+        left, bottom, right, top = self.get_Check_Box()
+        bottom_top = main_state.Map[6][5].Get
+        debug_print('Velocity : ' + str(self.velocity) + '  mario_bottom : ' + str(bottom) + '  Dir: ' + str(self.dir) + '  ques_top : ' + str(bottom_top))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
