@@ -492,6 +492,9 @@ class Mario:
             self.add_event(11)
         elif ques_collide == 2:
             self.add_event(STOP)
+            print("first  " + "%c", self.y)
+            self.y = round(self.y, -2)
+            print("second  " + "%c", self.y)
         elif (main_state.collide_block(self, main_state.mymap)):
             self.add_event(11)
 
@@ -499,8 +502,7 @@ class Mario:
         self.cur_state.draw(self)
         # draw_rectangle(*self.get_Check_Box())
         left, bottom, right, top = self.get_Check_Box()
-        bottom_top = main_state.Map[6][5].Get
-        debug_print('Velocity : ' + str(self.velocity) + '  mario_bottom : ' + str(bottom) + '  Dir: ' + str(self.dir) + '  ques_top : ' + str(bottom_top))
+        debug_print('Velocity : ' + str(self.velocity) + '  mario_bottom : ' + str(bottom) + '  Dir: ' + str(self.dir))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

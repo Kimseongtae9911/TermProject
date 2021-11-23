@@ -102,16 +102,16 @@ def collide_ques(a, b): # 5, 9
             if j == 16:
                 mushroom = Mushroom(j * 50 + 25, 300)
                 game_world.add_object(mushroom, 1)
-            return True
+            return 1
         elif top_a >= bottom_c and bottom_a <= bottom_c and Map.tile1[j][9] == 6 and ((right_a > left_c and left_a < right_c) or (left_a < right_c and right_a > left_c)):
-            return True
-        elif bottom_a <= top_b and bottom_a >= bottom_b and Map.tile1[j][5] == 7 and ((right_a > left_b and left_a < right_b) or (left_a < right_b and right_a > left_b)):
+            return 1
+        elif bottom_a <= top_b and bottom_a >= bottom_b and Map.tile1[j][5] == 6 and ((right_a > left_b and left_a < right_b) or (left_a < right_b and right_a > left_b)):
             print("Collide")
             return 2
-        elif bottom_a <= top_c and bottom_a >= bottom_c and Map.tile1[j][9] == 7 and ((right_a > left_c and left_a < right_c)  or (left_a < right_c and right_a > left_c)):
+        elif bottom_a <= top_c and bottom_a >= bottom_c and Map.tile1[j][9] == 6 and ((right_a > left_c and left_a < right_c)  or (left_a < right_c and right_a > left_c)):
             print("Collide")
             return 2
-    return False
+    return 0
 
 
 def collide_block(a, b):
