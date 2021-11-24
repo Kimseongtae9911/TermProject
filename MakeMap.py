@@ -1,5 +1,6 @@
 from pico2d import *
 from Character import *
+import server
 
 SCREENW = 1280; SCREENH = 800
 ratio = 237 / SCREENH
@@ -180,11 +181,11 @@ class Map:
                  if Map.tile1[j][i] == 6:
                     draw_rectangle(*self.get_Check_Box(i, j))
 
-    def update(self, mario):
-        if mario.get_marioPos() == SCREENW - 300:
-            self.camerax = int(mario.get_MapX())
-        elif mario.get_marioPos() == 200:
-            self.camerax = int(mario.get_MapX())
+    def update(self):
+        if server.mario.get_marioPos() == SCREENW - 300:
+            self.camerax = int(server.mario.get_MapX())
+        elif server.mario.get_marioPos() == 200:
+            self.camerax = int(server.mario.get_MapX())
 
     def get_Check_Box(self, i, j):
         return (j * self.blocksize) - self.camerax, i * self.blocksize, \

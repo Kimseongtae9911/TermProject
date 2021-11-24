@@ -5,6 +5,8 @@ import MakeMap
 import game_world
 import game_framework
 import main_state
+import collision
+import server
 import math
 
 SCREENW = 1280
@@ -136,10 +138,10 @@ class Mushroom:
 
             self.cur_state.enter(self, event)
 
-        if main_state.collide(main_state.mario, self):
+        if collision.collide(server.mario, self):
             game_world.remove_object(self)
-            if main_state.mario.cur_life < 2:
-                main_state.mario.cur_life += 1
+            if server.mario.cur_life < 2:
+                server.mario.cur_life += 1
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
