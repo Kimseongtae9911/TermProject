@@ -358,7 +358,6 @@ class FallState:
             mario.add_event(DIE)
         pass
 
-
     def draw(mario):
         if mario.dir == 1:
             if mario.cur_life <= 1:

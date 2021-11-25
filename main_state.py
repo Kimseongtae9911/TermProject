@@ -2,8 +2,6 @@ import random
 import json
 import os
 
-import Character
-from Character import *
 from pico2d import *
 import game_framework
 import game_world
@@ -15,8 +13,10 @@ from Goomba import Goomba
 name = "MainState"
 
 def enter():
-    server.mario = Mario()
-    server.mymap = Map()
+    if server.mario == None:
+        server.mario = Mario()
+    if server.mymap == None:
+        server.mymap = Map()
     server.goomba = Goomba(1200, 325)
     game_world.add_object(server.mymap, 0)
     game_world.add_object(server.mario, 2)
