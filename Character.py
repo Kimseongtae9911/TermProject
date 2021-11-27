@@ -8,7 +8,6 @@ import collision
 from Rocket import Rocket
 
 SCREENW = 1280
-mapx = 0
 
 PIXEL_PER_METER = (15.0 / 0.3)
 RUN_SPEED_MPM = (25 * 1000.0 / 60.0)
@@ -103,12 +102,12 @@ class RunState:
         pass
 
     def do(mario):
-        global mapx
         if mario.velocity == 0:
             mario.add_event(STOP)
 
         mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-        mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
+        if mario.collide_num == 0:
+            mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
 
         if mario.dir == 1:
             if mario.acc > 0:
@@ -180,7 +179,8 @@ class DashState:
 
     def do(mario):
         mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * (game_framework.frame_time * 2)) % 4
-        mario.x += (mario.velocity - mario.acc) * (game_framework.frame_time)
+        if mario.collide_num == 0:
+            mario.x += (mario.velocity - mario.acc) * (game_framework.frame_time)
         if mario.velocity > 0:
             if mario.acc > 0:
                 mario.acc -= 200 * game_framework.frame_time
@@ -236,7 +236,8 @@ class AccState:
     def do(mario):
         mario.frame = 7
 
-        mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
+        if mario.collide_num == 0:
+            mario.x += (mario.velocity - mario.acc) * game_framework.frame_time
         if mario.dir == 1:
             if mario.acc < mario.velocity + 100:
                 mario.acc += 500 * game_framework.frame_time
@@ -396,6 +397,9 @@ class DieState:
             mario.dir = -1
         elif mario.y <= -50:
             mario.life -= 1
+            mario.cur_life = 1
+            #  reset하는 함수 필요
+
             game_framework.change_state(loading_state)
 
     def draw(mario):
@@ -425,15 +429,13 @@ next_state_table = {
                 SHIFT_DOWN: FallState, SHIFT_UP: FallState, SPACE: FallState, FALL: FallState, DIE: DieState, STOP: FallState},
 
     DieState: {RIGHT_UP: DieState, LEFT_UP: DieState, RIGHT_DOWN: DieState, LEFT_DOWN: DieState,
-                SHIFT_DOWN: DieState, SHIFT_UP: DieState, SPACE: DieState, FALL: DieState, DIE: DieState, STOP: DieState, COLLIDE: DieState}
+                SHIFT_DOWN: DieState, SHIFT_UP: DieState, SPACE: DieState, FALL: DieState, DIE: DieState, STOP: IdleState, COLLIDE: DieState}
 }
 
 
 class Mario:
     image = None
-    life = 3
-    cur_life = 1
-    jumpdir = 1
+
     def __init__(self):
         if Mario.image == None:
             Mario.image = load_image('Resource\Mario.png')
@@ -448,28 +450,33 @@ class Mario:
         self.acc = 0.0
         self.jump = False
         self.mapx = 0
-        self.mariosizex = self.mariosizey = 55
+        self.mariosizex = self.mariosizey = 50
         self.timer = 1000
+        self.life = 3
+        self.cur_life = 1
+        self.jumpdir = 1
+        self.collide_num = 0
+
+    def reset(self):
+        pass
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def update(self):
-        global mapx
         if self.cur_life <= 1:
-            self.mariosizex = 55; self.mariosizey = 55;
+            self.mariosizex = 50; self.mariosizey = 50;
         elif self.cur_life >= 2:
-            self.mariosizex = 55; self.mariosizey = 110;
+            self.mariosizey = 100;
 
         self.timer -= 5
-        mapx = self.mapx
         if self.timer <= 0:
-            rocket = Rocket(SCREENW, self.y)
-            game_world.add_object(rocket, 1)
+            # server.rocket = Rocket(SCREENW, self.y)
+            # game_world.add_object(server.rocket, 1)
             self.timer = 1000
 
         if self.cur_life == 0:
-            print(self.life)
+            self.cur_life = 1
             self.add_event(DIE)
 
 
@@ -487,17 +494,21 @@ class Mario:
             self.cur_state.enter(self, event)
 
         ques_collide = collision.collide_ques(self, server.mymap)
+        self.collide_num = collision.collide_mario(self)
+        # if collide_num == 1:
+        #     self.mapx -= (self.velocity - self.acc) * game_framework.frame_time
+        # elif collide_num == 2:
+        #     self.mapx -= (self.velocity - self.acc) * game_framework.frame_time
         if (collision.collide_base(self, server.mymap)):
             self.add_event(9)
         elif (ques_collide == 1):
             self.add_event(11)
         elif ques_collide == 2:
+            print(self.cur_state)
+            if self.cur_state == JumpState:
+                self.y = round(self.y, -2) + 25
+                print('success')
             self.add_event(STOP)
-            print("first  " + "%c", self.y)
-            self.y = round(self.y, -2)
-            print("second  " + "%c", self.y)
-        elif (collision.collide_block(self, server.mymap)):
-            self.add_event(11)
 
     def draw(self):
         self.cur_state.draw(self)
@@ -516,6 +527,9 @@ class Mario:
     def get_marioPos(self):
         return self.x
 
+    def get_marioPosY(self):
+        return self.y
+
     def get_MapX(self):
         return self.mapx
 
@@ -523,7 +537,4 @@ class Mario:
         if self.cur_life <= 1:
             return self.x - self.mariosizex // 2, self.y - self.mariosizey // 2, self.x + (self.mariosizex // 2), self.y + self.mariosizey // 2
         else:
-            return self.x - self.mariosizex // 2, self.y - self.mariosizey // 4, self.x + (self.mariosizex // 2), self.y + self.mariosizex * 2
-
-def get_Map():
-    return mapx
+            return self.x - self.mariosizex // 2, self.y - self.mariosizey // 4, self.x + (self.mariosizex // 2), self.y + self.mariosizex * 1.5

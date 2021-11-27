@@ -17,10 +17,10 @@ def enter():
         server.mario = Mario()
     if server.mymap == None:
         server.mymap = Map()
-    server.goomba = Goomba(1200, 325)
+    # server.goomba = Goomba(1200, 325)
     game_world.add_object(server.mymap, 0)
     game_world.add_object(server.mario, 2)
-    game_world.add_object(server.goomba, 1)
+    # game_world.add_object(server.goomba, 1)
 
 
 def exit():

@@ -44,7 +44,7 @@ class IdleState:
         if mushroom.x < 25:
             game_world.remove_object(mushroom)
 
-        mushroom.camerax = Character.get_Map()
+        mushroom.camerax = server.mario.get_MapX()
 
     def draw(mushroom):
         mushroom.mushroom.clip_draw(0, 16 - int(mushroom.drawy), 16, int(mushroom.drawy), mushroom.x - mushroom.camerax, mushroom.y,
@@ -59,7 +59,7 @@ class Move_RState:
         pass
 
     def do(mushroom):
-        mushroom.camerax = Character.get_Map()
+        mushroom.camerax = server.mario.get_MapX()
         mushroom.x += MOVE_SPEED * game_framework.frame_time
         tempx, tempy = (mushroom.x - mushroom.camerax - 25) // 50, math.ceil((mushroom.y - 25) / 50)
 
@@ -86,7 +86,7 @@ class Move_LState:
         if mushroom.x < 25:
             game_world.remove_object(mushroom)
 
-        mushroom.camerax = Character.get_Map()
+        mushroom.camerax = server.mario.get_MapX()
 
     def draw(mushroom):
         if mushroom.dir == 1:
@@ -108,7 +108,7 @@ class Mushroom:
     def __init__(self, x, y):
         if Mushroom.image == None:
             self.mushroom = load_image('Resource\Mushroom.png')
-        self.camerax = Character.get_Map()
+        self.camerax = server.mario.get_MapX()
         self.x, self.y = x + self.camerax, y
         self.drawy = 0
         self.sizex, self.sizey = 50, 50

@@ -57,8 +57,8 @@ def update():
 
     if timer <= 0:
         timer =1000
-        game_framework.push_state(main_state)
-    pass
+        game_framework.change_state(main_state)
+
 
 def draw():
     global image

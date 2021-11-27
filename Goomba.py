@@ -37,7 +37,7 @@ class Move_RState:
         pass
 
     def do(Goomba):
-        Goomba.camerax = Character.get_Map()
+        Goomba.camerax = server.mario.get_MapX()
         Goomba.x += MOVE_SPEED * game_framework.frame_time
         Goomba.frame = (Goomba.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         tempx, tempy = (Goomba.x - Goomba.camerax - 25) // 50, math.ceil((Goomba.y - 25) / 50)
@@ -84,7 +84,7 @@ class Goomba:
     def __init__(self, x, y):
         if Goomba.image == None:
             self.image = load_image('Resource\MushroomMonster.png')
-        self.camerax = Character.get_Map()
+        self.camerax = server.mario.get_MapX()
         self.x, self.y = x + self.camerax, y
         self.frame = 0
         self.sizex, self.sizey = 50, 50
