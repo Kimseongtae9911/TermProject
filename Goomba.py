@@ -42,7 +42,7 @@ class Move_RState:
         Goomba.frame = (Goomba.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         tempx, tempy = (Goomba.x - Goomba.camerax - 25) // 50, math.ceil((Goomba.y - 25) / 50)
 
-        if MakeMap.Map.tile1[int(tempx)][(tempy) - 1] == 0:
+        if MakeMap.Map.tile[int(tempx)][(tempy) - 1] == 0:
             Goomba.y -= (MOVE_SPEED + 100) * game_framework.frame_time
 
         if Goomba.x < 25:
