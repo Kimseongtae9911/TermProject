@@ -4,6 +4,7 @@ from Mushroom import Mushroom
 import Character
 import pico2d
 
+
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_Check_Box()
     left_b, bottom_b, right_b, top_b = b.get_Check_Box()
@@ -13,6 +14,19 @@ def collide(a, b):
     if bottom_a > top_b: return False
 
     return True
+
+
+def collide_base(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_Check_Box()
+    for j in range(0, 254):
+        left_b, bottom_b, right_b, top_b = b.get_Check_Box(1, j)
+        left_c, bottom_c, right_c, top_c = b.get_Check_Box(1, j + 1)
+        if bottom_a == top_b and server.mymap.tile[j][1] == 0 and left_a + 10 > left_b and right_a < right_b:
+            return True
+        elif bottom_a == top_b and server.mymap.tile[j][1] == 0 and server.mymap.tile[j+1][1] == 0 and left_a + 10 > left_b and right_a < right_c:
+            return True
+
+    return False
 
 
 def collide_mario(a):
@@ -30,16 +44,50 @@ def collide_mario(a):
 
     if server.mario.cur_state == Character.JumpState:
         # 블럭의 윗부분과 마리오의 아래부분 충돌체크
-        if right_a + 1 >= left_2 and left_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
+        #아래 오른블럭과 체크
+        if bottom_a <= top_2 and top_a >= top_2 and right_a >= left_2 and right_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
+        server.mymap.tile[checkx2][checky1] != 9 and server.mymap.tile[checkx2][checky1] != 10 and server.mymap.tile[checkx2][checky1] != 11 and
+        server.mymap.tile[checkx2][checky1] != 12 and server.mymap.tile[checkx2][checky1] != -1) and server.mario.jumpdir == -1:
+            server.mario.y = pico2d.clamp(top_1 + server.mymap.blocksize // 2, server.mario.y, top_1 + server.mymap.blocksize // 2)
+            server.mario.add_event(8)
+            server.mario.jump = False
+            return 5
+        # 아래 왼쪽블럭과 체크
+        elif bottom_a <= top_1 and top_a >= top_1 and left_a >= left_1 and left_a <= right_1 and (server.mymap.tile[checkx1][checky1] != 0 and server.mymap.tile[checkx1][checky1] != 8 and
+        server.mymap.tile[checkx1][checky1] != 9 and server.mymap.tile[checkx1][checky1] != 10 and server.mymap.tile[checkx1][checky1] != 11 and
+        server.mymap.tile[checkx1][checky1] != 12 and server.mymap.tile[checkx1][checky1] != -1) and server.mario.jumpdir == -1:
+            server.mario.y = pico2d.clamp(top_1 + server.mymap.blocksize // 2, server.mario.y, top_1 + server.mymap.blocksize // 2)
+            server.mario.add_event(8)
+            server.mario.jump = False
+            return 6
+        # 위 왼쪽블럭과 체크
+        elif top_a >= bottom_3 and bottom_a <= bottom_3 and left_a >= left_3 and left_a <= right_3 and (server.mymap.tile[checkx1][checky2] != 0 and server.mymap.tile[checkx1][checky2] != 8 and
+        server.mymap.tile[checkx1][checky2] != 9 and server.mymap.tile[checkx1][checky2] != 10 and server.mymap.tile[checkx1][checky2] != 11 and
+        server.mymap.tile[checkx1][checky2] != 12 and server.mymap.tile[checkx1][checky2] != -1):
+            if server.mymap.tile[checkx1][checky2] == 5:
+                mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25, (checky2 + 1) * server.mymap.blocksize)
+                server.mymap.tile[checkx1][checky2] = 7
+                game_world.add_object(mushroom, 1)
+            return 8
+        # 위 오른블럭과 체크
+        elif top_a >= bottom_4 and bottom_a <= bottom_4 and right_a >= left_4 and right_a <= right_4 and (server.mymap.tile[checkx2][checky2] != 0 and server.mymap.tile[checkx2][checky2] != 8 and
+        server.mymap.tile[checkx2][checky2] != 9 and server.mymap.tile[checkx2][checky2] != 10 and server.mymap.tile[checkx2][checky2] != 11 and
+        server.mymap.tile[checkx2][checky2] != 12 and server.mymap.tile[checkx2][checky2] != -1):
+            if server.mymap.tile[checkx1][checky2] == 5:
+                mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25, (checky2 + 1) * server.mymap.blocksize)
+                server.mymap.tile[checkx1][checky2] = 7
+                game_world.add_object(mushroom, 1)
+            return 8
+        elif right_a + 1 >= left_2 and left_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
         server.mymap.tile[checkx2][checky1] != 9 and server.mymap.tile[checkx2][checky1] != 10 and server.mymap.tile[checkx2][checky1] != 11 and
         server.mymap.tile[checkx2][checky1] != 12 and server.mymap.tile[checkx2][checky1] != -1) and server.mario.dir == 1:
             server.mario.x = pico2d.clamp(left_2 - server.mario.mariosizex // 2 - 1, server.mario.x, left_2 - server.mario.mariosizex // 2 - 1)
             return 3
+
         # 왼쪽으로 이동할때
         elif left_a <= right_1 and right_a >= right_1 and (server.mymap.tile[checkx1][checky1] != 0 and server.mymap.tile[checkx1][checky1] != 8 and
         server.mymap.tile[checkx1][checky1] != 9 and server.mymap.tile[checkx1][checky1] != 10 and server.mymap.tile[checkx1][checky1] != 11 and
         server.mymap.tile[checkx1][checky1] != 12 and server.mymap.tile[checkx1][checky1] != -1):
-            # print(server.mymap.tile[checkx1][checky1])
             server.mario.x = pico2d.clamp(right_1 + server.mario.mariosizex // 2 + 1, server.mario.x, right_1 + server.mario.mariosizex // 2 + 1)
             return 4
 
@@ -55,42 +103,12 @@ def collide_mario(a):
         elif left_a <= right_1 and right_a >= right_1 and (server.mymap.tile[checkx1][checky1] != 0 and server.mymap.tile[checkx1][checky1] != 8 and
         server.mymap.tile[checkx1][checky1] != 9 and server.mymap.tile[checkx1][checky1] != 10 and server.mymap.tile[checkx1][checky1] != 11 and
         server.mymap.tile[checkx1][checky1] != 12 and server.mymap.tile[checkx1][checky1] != -1):
-            # print(server.mymap.tile[checkx1][checky1])
             server.mario.x = pico2d.clamp(right_1 + server.mario.mariosizex // 2 + 1, server.mario.x, right_1 + server.mario.mariosizex // 2 + 1)
             return 2
 
-    return 0
-
-def collide_base(a, b):
-    left_a, bottom_a, right_a, top_a = a.get_Check_Box()
-    for j in range(0, 254):
-        left_b, bottom_b, right_b, top_b = b.get_Check_Box(8, j)
-        left_c, bottom_c, right_c, top_c = b.get_Check_Box(8, j + 1)
-        if bottom_a == top_b and server.mymap.tile[j][1] == 0 and left_a + 10 > left_b and right_a < right_b:
-            return True
-        elif bottom_a == top_b and server.mymap.tile[j][1] == 0 and server.mymap.tile[j+1][1] == 0 and left_a + 10 > left_b and right_a < right_c:
-            return True
-
-    return False
-
-
-def collide_ques(a, b): # 5, 9
-    left_a, bottom_a, right_a, top_a = a.get_Check_Box()
-    for j in range(0, 254):
-        left_b, bottom_b, right_b, top_b = b.get_Check_Box(5, j)
-        left_c, bottom_c, right_c, top_c = b.get_Check_Box(9, j)
-        if top_a + 10>= bottom_b and bottom_a <= bottom_b and server.mymap.tile[j][5] == 5 and ((right_a > left_b and left_a < right_b) or (left_a < right_b and right_a > left_b)):
-            server.mymap.tile[j][5] = 7
-            if j == 16:
-                mushroom = Mushroom(j * 50 + 25, 300)
-                game_world.add_object(mushroom, 1)
-            return 1
-        elif top_a >= bottom_c and bottom_a <= bottom_c and server.mymap.tile[j][9] == 5 and ((right_a > left_c and left_a < right_c) or (left_a < right_c and right_a > left_c)):
-            return 1
-        elif bottom_a <= top_b and bottom_a >= bottom_b and server.mymap.tile[j][5] == 5 and ((right_a > left_b and left_a < right_b) or (left_a < right_b and right_a > left_b)):
-            print("Collide")
-            return 2
-        elif bottom_a <= top_c and bottom_a >= bottom_c and server.mymap.tile[j][9] == 5 and ((right_a > left_c and left_a < right_c)  or (left_a < right_c and right_a > left_c)):
-            print("Collide")
-            return 2
+        # 밑에 블럭이 없으면 떨어져야한다
+        elif server.mymap.tile[checkx1][checky1 - 1] == 0 and server.mymap.tile[checkx2][checky1 - 1] == 0:
+            server.mario.add_event(7)
+            server.mario.jumpdir = -1
+            return 7
     return 0
