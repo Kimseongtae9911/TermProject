@@ -53,7 +53,7 @@ class IdleState:
             mario.velocity -= RUN_SPEED
         elif event == LEFT_UP:
             mario.velocity += RUN_SPEED
-        mario.acc = 0
+        mario.velocity = mario.acc = 0
 
     def exit(mario, event):
         if event == SPACE:
@@ -92,10 +92,13 @@ class RunState:
             mario.velocity -= RUN_SPEED
         elif event == LEFT_UP:
             mario.velocity += RUN_SPEED
-        if event != STOP:
-            mario.dir = clamp(-1, mario.velocity, 1)
         if mario.acc == 0 and event != SHIFT_UP:
             mario.acc = mario.velocity
+        if event != STOP:
+            mario.dir = clamp(-1, mario.velocity, 1)
+        else:
+            mario.acc = 0
+
             # 멈춰있을때도 acc==0 최대 속도로 달릴때도 acc==0
     def exit(mario, event):
         if event == SPACE:
@@ -232,7 +235,7 @@ class AccState:
 
     def exit(mario, event):
         mario.velocity = 0
-        pass
+
 
     def do(mario):
         mario.frame = 7
