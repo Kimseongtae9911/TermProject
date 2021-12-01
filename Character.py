@@ -45,14 +45,6 @@ key_event_table = {
 
 class IdleState:
     def enter(mario, event):
-        if event == RIGHT_DOWN:
-            mario.velocity += RUN_SPEED
-        elif event == LEFT_DOWN:
-            mario.velocity -= RUN_SPEED
-        elif event == RIGHT_UP:
-            mario.velocity -= RUN_SPEED
-        elif event == LEFT_UP:
-            mario.velocity += RUN_SPEED
         mario.velocity = mario.acc = 0
 
     def exit(mario, event):
@@ -179,7 +171,7 @@ class DashState:
                 mario.velocity = -RUN_SPEED
         elif event == SPACE:
             mario.jump = True
-        pass
+
 
     def do(mario):
         mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * (game_framework.frame_time * 2)) % 4
@@ -234,7 +226,10 @@ class AccState:
         pass
 
     def exit(mario, event):
-        mario.velocity = 0
+        if event != SPACE:
+            mario.velocity = 0
+        else:
+            mario.jump = True
 
 
     def do(mario):
@@ -311,6 +306,9 @@ class JumpState:
 
     def do(mario):
         if mario.jump:
+            if mario.collide_num == 3 or mario.collide_num == 8:
+                mario.jumpdir = -1
+
             if mario.y - mario.jumpstart > 275:  # 점프조건을 수정해야함 점프시작 위치를 기준으로 275만큼 올라야함 수정완료?
                 mario.jumpdir = -1
             elif mario.y < 125:
@@ -387,6 +385,7 @@ class FallState:
                 mario.l_image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2,
                                         mario.mariosizex, mario.mariosizey)
 
+
 class DieState:
     def enter(mario, event):
         mario.dir == 1
@@ -429,7 +428,7 @@ next_state_table = {
                SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: JumpState, STOP: IdleState, FALL: FallState, DIE: DieState},
 
     AccState: {RIGHT_UP: AccState, LEFT_UP: AccState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-               SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: AccState, FALL: FallState, DIE: DieState},
+               SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: JumpState, FALL: FallState, DIE: DieState},
 
     JumpState: {RIGHT_UP: JumpState, LEFT_UP: JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN: JumpState,
                SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState, FALL: FallState, DIE: DieState,
@@ -504,10 +503,10 @@ class Mario:
 
             self.cur_state.enter(self, event)
 
-        self.collide_num = collision.collide_mario(self)
 
+        self.collide_num = collision.collide_mario(self)
         if (collision.collide_base(self, server.mymap)):
-            self.add_event(9)
+            self.add_event(FALL)
         elif self.collide_num == 8:
             self.jumpdir = -1
             self.add_event(SPACE)
@@ -516,7 +515,7 @@ class Mario:
         self.cur_state.draw(self)
         draw_rectangle(*self.get_Check_Box())
         left, bottom, right, top = self.get_Check_Box()
-        debug_print('Velocity : ' + str(self.velocity) + '  Acc : ' + str(self.acc) + '  Dir: ' + str(self.dir) + '  State: ' + str(self.cur_state))
+        debug_print('Velocity : ' + str(self.velocity) + '  Acc : ' + str(self.acc) + '  Dir: ' + str(self.dir) + '  y: ' + str(self.y))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

@@ -65,18 +65,20 @@ def collide_mario(a):
         server.mymap.tile[checkx1][checky2] != 9 and server.mymap.tile[checkx1][checky2] != 10 and server.mymap.tile[checkx1][checky2] != 11 and
         server.mymap.tile[checkx1][checky2] != 12 and server.mymap.tile[checkx1][checky2] != -1):
             if server.mymap.tile[checkx1][checky2] == 5:
-                mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25, (checky2 + 1) * server.mymap.blocksize)
+                if checkx1 == 16:
+                    mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
+                    game_world.add_object(mushroom, 1)
                 server.mymap.tile[checkx1][checky2] = 7
-                game_world.add_object(mushroom, 1)
             return 8
         # 위 오른블럭과 체크
         elif top_a >= bottom_4 and bottom_a <= bottom_4 and right_a >= left_4 and right_a <= right_4 and (server.mymap.tile[checkx2][checky2] != 0 and server.mymap.tile[checkx2][checky2] != 8 and
         server.mymap.tile[checkx2][checky2] != 9 and server.mymap.tile[checkx2][checky2] != 10 and server.mymap.tile[checkx2][checky2] != 11 and
         server.mymap.tile[checkx2][checky2] != 12 and server.mymap.tile[checkx2][checky2] != -1):
-            if server.mymap.tile[checkx1][checky2] == 5:
-                mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25, (checky2 + 1) * server.mymap.blocksize)
-                server.mymap.tile[checkx1][checky2] = 7
-                game_world.add_object(mushroom, 1)
+            if server.mymap.tile[checkx2][checky2] == 5:
+                if checkx2 == 16:
+                    mushroom = Mushroom(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
+                    game_world.add_object(mushroom, 1)
+                server.mymap.tile[checkx2][checky2] = 7
             return 8
         elif right_a + 1 >= left_2 and left_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
         server.mymap.tile[checkx2][checky1] != 9 and server.mymap.tile[checkx2][checky1] != 10 and server.mymap.tile[checkx2][checky1] != 11 and
@@ -89,7 +91,7 @@ def collide_mario(a):
         server.mymap.tile[checkx1][checky1] != 9 and server.mymap.tile[checkx1][checky1] != 10 and server.mymap.tile[checkx1][checky1] != 11 and
         server.mymap.tile[checkx1][checky1] != 12 and server.mymap.tile[checkx1][checky1] != -1):
             server.mario.x = pico2d.clamp(right_1 + server.mario.mariosizex // 2 + 1, server.mario.x, right_1 + server.mario.mariosizex // 2 + 1)
-            return 4
+            return 3
 
     # 마리오가 땅에서 이동할때 충돌체크
     elif server.mario.cur_state == Character.RunState or server.mario.cur_state == Character.DashState or server.mario.cur_state == Character.AccState:
