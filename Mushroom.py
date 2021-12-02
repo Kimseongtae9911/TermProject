@@ -1,7 +1,5 @@
 from pico2d import *
 import Character
-import MakeMap
-
 import game_world
 import game_framework
 import main_state
@@ -63,9 +61,8 @@ class Move_RState:
         mushroom.x += MOVE_SPEED * game_framework.frame_time
         tempx, tempy = (mushroom.x - mushroom.camerax - 25) // 50, math.ceil((mushroom.y - 25) / 50)
 
-        if MakeMap.Map.tile[int(tempx)][(tempy) - 1] == 0:
+        if server.mymap.tile[int(tempx)][(tempy) - 1] == 0:
             mushroom.y -= (MOVE_SPEED + 100) * game_framework.frame_time
-
         if mushroom.x < 25:
             game_world.remove_object(mushroom)
 
@@ -150,3 +147,11 @@ class Mushroom:
 
     def get_Check_Box(self):
         return self.x - self.sizex // 2 - self.camerax, self.y - self.sizey // 2, self.x + (self.sizex // 2) - self.camerax, self.y + self.sizey // 2
+
+    def __getstate__(self):
+        state = {'x': self.x, 'y': self.y, 'camerax': self.camerax, 'drawy': self.drawy, 'cur_state': self.cur_state}
+        return state
+
+    def __setstate__(self, state):
+        self.__init__()
+        self.__dict__.update(state)

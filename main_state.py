@@ -15,11 +15,11 @@ name = "MainState"
 def enter():
     if server.mario == None:
         server.mario = Mario()
+        game_world.add_object(server.mario, 2)
     if server.mymap == None:
         server.mymap = Map()
+        game_world.add_object(server.mymap, 0)
     # server.goomba = Goomba(1200, 325)
-    game_world.add_object(server.mymap, 0)
-    game_world.add_object(server.mario, 2)
     # game_world.add_object(server.goomba, 1)
 
 
@@ -32,12 +32,6 @@ def pause():
 
 
 def resume():
-    # server.mario = Mario()
-    # server.mymap = Map()
-    # server.goomba = Goomba()
-    # game_world.add_object(server.mymap, 0)
-    # game_world.add_object(server.mario, 2)
-    # game_world.add_object(server.goomba, 1)
     pass
 
 
@@ -48,6 +42,9 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
+            game_world.save()
+            print('Saved current game world')
         else:
             server.mario.handle_event(event)
 

@@ -16,7 +16,7 @@ class Rocket:
         self.camerax = server.mario.get_MapX()
         self.x, self.y = x + self.camerax, y
         self.rocketsizex, self.rocketsizey = 50, 30
-        self.velocity = 300
+        self.velocity = 200
 
 
     def draw(self):
@@ -40,3 +40,11 @@ class Rocket:
 
     def get_Check_Box(self):
         return self.x - self.rocketsizex // 2 - self.camerax, self.y - self.rocketsizey // 2, self.x + (self.rocketsizex // 2) - self.camerax, self.y + self.rocketsizey // 2
+
+    def __getstate__(self):
+        state = {'x': self.x, 'y': self.y, 'camerax': self.camerax}
+        return state
+
+    def __setstate__(self, state):
+        self.__init__()
+        self.__dict__.update(state)

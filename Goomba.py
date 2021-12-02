@@ -1,6 +1,5 @@
 from pico2d import *
 import Character
-import MakeMap
 
 import game_world
 import game_framework
@@ -42,7 +41,7 @@ class Move_RState:
         Goomba.frame = (Goomba.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         tempx, tempy = (Goomba.x - Goomba.camerax - 25) // 50, math.ceil((Goomba.y - 25) / 50)
 
-        if MakeMap.Map.tile[int(tempx)][(tempy) - 1] == 0:
+        if server.mymap.tile[int(tempx)][(tempy) - 1] == 0:
             Goomba.y -= (MOVE_SPEED + 100) * game_framework.frame_time
 
         if Goomba.x < 25:
@@ -129,3 +128,11 @@ class Goomba:
 
     def get_Check_Box(self):
         return self.x - self.sizex // 2 - self.camerax, self.y - self.sizey // 2, self.x + (self.sizex // 2) - self.camerax, self.y + self.sizey // 2
+
+    def __getstate__(self):
+        state = {'x': self.x, 'y': self.y, 'camerax': self.camerax, 'cur_state': self.cur_state}
+        return state
+
+    def __setstate__(self, state):
+        self.__init__()
+        self.__dict__.update(state)

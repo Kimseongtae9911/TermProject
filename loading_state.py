@@ -4,10 +4,14 @@ import os
 
 from pico2d import *
 import game_framework
+import game_world
 import main_state
 import server
 from Character import Mario
 from MakeMap import Map
+from Goomba import Goomba
+from Rocket import Rocket
+from Mushroom import Mushroom
 
 name = "LoadingState"
 SCREENW = 1280; SCREENH = 800
@@ -24,6 +28,8 @@ def enter():
         server.mymap = Map()
     image = load_image('Resource\loading.png')
     numbers = load_image('Resource\_Number.png')
+    hide_cursor()
+    hide_lattice()
 
 
 def exit():
@@ -48,7 +54,35 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 game_framework.quit()
+            elif event.key == SDLK_l:
+                load_saved_world()
 
+def create_new_world():
+    server.mario = Mario()
+    game_world.add_object(server.mario, 1)
+
+    with open('map_data.json', 'r') as f:
+        map_data_list = json.load(f)
+
+    for i in range(0, 16):
+        for j in range(0, 255):
+            pass
+
+
+def load_saved_world():
+    game_world.load()
+
+    for o in game_world.all_objects():
+        if isinstance(o, Mario):
+            server.mario = o
+        elif isinstance(o, Map):
+            server.mymap = o
+        elif isinstance(o, Goomba):
+            server.goomba = o
+        elif isinstance(o, Rocket):
+            server.rockets = o
+        elif isinstance(o, Mushroom):
+            server.mushroom = o
 
 def update():
     global timer
@@ -56,7 +90,8 @@ def update():
         timer -= 1
 
     if timer <= 0:
-        timer =1000
+        timer = 1000
+        # load_saved_world()
         game_framework.change_state(main_state)
 
 

@@ -539,3 +539,13 @@ class Mario:
             return self.x - self.mariosizex // 2, self.y - self.mariosizey // 2, self.x + (self.mariosizex // 2), self.y + self.mariosizey // 2
         else:
             return self.x - self.mariosizex // 2, self.y - self.mariosizey // 4, self.x + (self.mariosizex // 2), self.y + self.mariosizex * 1.5
+
+    def __getstate__(self):
+        state = {'x': self.x, 'y': self.y, 'dir': self.dir, 'mariosizex': self.mariosizex,
+                 'mariosizey': self.mariosizey, 'life': self.life, 'cur_life': self.cur_life, 'mapx': self.mapx}
+
+        return state
+
+    def __setstate__(self, state):
+        self.__init__()
+        self.__dict__.update(state)
