@@ -1,6 +1,7 @@
 import random
 import json
 import os
+import csv
 
 from pico2d import *
 import game_framework
@@ -61,12 +62,8 @@ def create_new_world():
     server.mario = Mario()
     game_world.add_object(server.mario, 1)
 
-    with open('map_data.json', 'r') as f:
-        map_data_list = json.load(f)
-
-    for i in range(0, 16):
-        for j in range(0, 255):
-            pass
+    with open('map_data.txt', 'r') as f:
+        map_data_list = csv.reader(f, delimeter=', ')
 
 
 def load_saved_world():
