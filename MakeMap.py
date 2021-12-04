@@ -115,12 +115,10 @@ class Map:
                             self.tile[j][i] = 7
         self.camerax = 0
 
-        for j in range(0, 255):
-            for i in range(0, 16):
-                print(self.tile[j][i], end='')
-                if i != 15:
-                    print(",", end='')
-            print()
+        # for j in range(0, 255):
+        #     for i in range(0, 16):
+        #         print(self.tile[j][i])
+
     def draw(self):
         if self.num == 1:
             self.num = 1

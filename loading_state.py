@@ -7,6 +7,7 @@ from pico2d import *
 import game_framework
 import game_world
 import main_state
+import game_over_state
 import server
 from Character import Mario
 from MakeMap import Map
@@ -31,7 +32,8 @@ def enter():
     numbers = load_image('Resource\_Number.png')
     hide_cursor()
     hide_lattice()
-
+    if server.mario.life == 0:
+        game_framework.change_state(game_over_state)
 
 def exit():
     global image, numbers
@@ -60,10 +62,23 @@ def handle_events():
 
 def create_new_world():
     server.mario = Mario()
+    server.mymap = Map()
+    game_world.add_object(server.mymap, 0)
     game_world.add_object(server.mario, 1)
 
-    with open('map_data.txt', 'r') as f:
-        map_data_list = csv.reader(f, delimeter=', ')
+    cnti = 0
+    cntj = 0
+    with open('map_data.txt', 'rt') as f:
+        while True:
+            c = f.readline()
+            if c == '':
+                break
+            temp = int(c)
+            server.mymap.tile[cntj][cnti] = temp
+            cnti += 1
+            if cnti == 16:
+                cnti = 0
+                cntj += 1
 
 
 def load_saved_world():
@@ -88,7 +103,9 @@ def update():
 
     if timer <= 0:
         timer = 1000
-        # load_saved_world()
+        temp_life = server.mario.life
+        create_new_world()
+        server.mario.life = temp_life
         game_framework.change_state(main_state)
 
 
