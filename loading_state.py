@@ -95,6 +95,7 @@ def load_saved_world():
             server.rockets = o
         elif isinstance(o, Mushroom):
             server.mushroom = o
+    game_framework.change_state(main_state)
 
 def update():
     global timer

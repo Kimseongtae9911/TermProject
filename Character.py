@@ -48,10 +48,7 @@ class IdleState:
         mario.velocity = mario.acc = 0
 
     def exit(mario, event):
-        if event == SPACE:
-            mario.jump = True
-            mario.jumpdir = 1
-
+        pass
 
     def do(mario):
         pass
@@ -93,8 +90,6 @@ class RunState:
 
             # 멈춰있을때도 acc==0 최대 속도로 달릴때도 acc==0
     def exit(mario, event):
-        if event == SPACE:
-            mario.jump = True
         pass
 
     def do(mario):
@@ -169,8 +164,6 @@ class DashState:
                 mario.velocity = RUN_SPEED
             else:
                 mario.velocity = -RUN_SPEED
-        elif event == SPACE:
-            mario.jump = True
 
 
     def do(mario):
@@ -226,10 +219,7 @@ class AccState:
         pass
 
     def exit(mario, event):
-        if event != SPACE:
-            mario.velocity = 0
-        else:
-            mario.jump = True
+        mario.velocity = 0
 
 
     def do(mario):
@@ -295,11 +285,18 @@ class JumpState:
                 mario.velocity = 0
         elif event == COLLIDE:
             mario.jumpdir = -1
+        elif event == SPACE:
+            if mario.jump == False and mario.jumpdir != -1:
+                mario.jumpstart = mario.y
+                mario.jump = True
+                mario.jumpdir = 1
+            elif mario.jumpdir == -1:
+                mario.jump = True
         if mario.velocity != 0:
             mario.dir = clamp(-1, mario.velocity, 1)
 
-        if mario.jumpdir != 1:  # 바닥에서 점프가 아니라 다른곳 위에 있을 때 점프시작위치 저장, but 점프중간에 스페이스를 누르면 다시 저장하면안됨 수정필요
-            mario.jumpstart = mario.y
+        # if mario.jumpdir != 1:  # 바닥에서 점프가 아니라 다른곳 위에 있을 때 점프시작위치 저장, but 점프중간에 스페이스를 누르면 다시 저장하면안됨 수정필요
+        #     mario.jumpstart = mario.y
 
     def exit(mario, event):
         pass
@@ -312,7 +309,7 @@ class JumpState:
             if mario.y - mario.jumpstart > 275:  # 점프조건을 수정해야함 점프시작 위치를 기준으로 275만큼 올라야함 수정완료?
                 mario.jumpdir = -1
             elif mario.y < 125:
-                mario.jumpdir = 0
+                mario.jumpdir = 1
                 mario.y = 125
                 mario.jump = False
                 mario.add_event(STOP)
@@ -507,6 +504,7 @@ class Mario:
         self.collide_num = collision.collide_mario(self)
         if (collision.collide_base(self, server.mymap)):
             self.add_event(FALL)
+
         elif self.collide_num == 8:
             self.jumpdir = -1
             self.add_event(SPACE)
@@ -515,7 +513,7 @@ class Mario:
         self.cur_state.draw(self)
         draw_rectangle(*self.get_Check_Box())
         left, bottom, right, top = self.get_Check_Box()
-        debug_print('Velocity : ' + str(self.velocity) + '  Acc : ' + str(self.acc) + '  Dir: ' + str(self.dir) + '  y: ' + str(self.y))
+        debug_print('Velocity : ' + str(self.velocity) + '  Dir: ' + str(self.dir) + '  jumpdir: ' + str(self.jumpdir) + '  jumpstart: ' + str(self.jumpstart))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

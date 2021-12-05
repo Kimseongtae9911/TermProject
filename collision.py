@@ -48,17 +48,23 @@ def collide_mario(a):
         if bottom_a <= top_2 and top_a >= top_2 and right_a >= left_2 and right_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
         server.mymap.tile[checkx2][checky1] != 9 and server.mymap.tile[checkx2][checky1] != 10 and server.mymap.tile[checkx2][checky1] != 11 and
         server.mymap.tile[checkx2][checky1] != 12 and server.mymap.tile[checkx2][checky1] != -1) and server.mario.jumpdir == -1:
-            server.mario.y = pico2d.clamp(top_1 + server.mymap.blocksize // 2, server.mario.y, top_1 + server.mymap.blocksize // 2)
-            server.mario.add_event(8)
-            server.mario.jump = False
+            if server.mario.jumpdir == -1:
+                server.mario.add_event(8)
+                server.mario.jump = False
+                server.mario.jumpdir = 1
+            if server.mario.jump == False:
+                server.mario.y = pico2d.clamp(top_1 + server.mymap.blocksize // 2, server.mario.y, top_1 + server.mymap.blocksize // 2)
             return 5
         # 아래 왼쪽블럭과 체크
         elif bottom_a <= top_1 and top_a >= top_1 and left_a >= left_1 and left_a <= right_1 and (server.mymap.tile[checkx1][checky1] != 0 and server.mymap.tile[checkx1][checky1] != 8 and
         server.mymap.tile[checkx1][checky1] != 9 and server.mymap.tile[checkx1][checky1] != 10 and server.mymap.tile[checkx1][checky1] != 11 and
         server.mymap.tile[checkx1][checky1] != 12 and server.mymap.tile[checkx1][checky1] != -1) and server.mario.jumpdir == -1:
-            server.mario.y = pico2d.clamp(top_1 + server.mymap.blocksize // 2, server.mario.y, top_1 + server.mymap.blocksize // 2)
-            server.mario.add_event(8)
-            server.mario.jump = False
+            if server.mario.jumpdir == -1:
+                server.mario.add_event(8)
+                server.mario.jump = False
+                server.mario.jumpdir = 1
+            if server.mario.jump == False:
+                server.mario.y = pico2d.clamp(top_1 + server.mymap.blocksize // 2, server.mario.y, top_1 + server.mymap.blocksize // 2)
             return 6
         # 위 왼쪽블럭과 체크
         elif top_a >= bottom_3 and bottom_a <= bottom_3 and left_a >= left_3 and left_a <= right_3 and (server.mymap.tile[checkx1][checky2] != 0 and server.mymap.tile[checkx1][checky2] != 8 and
@@ -110,7 +116,7 @@ def collide_mario(a):
 
         # 밑에 블럭이 없으면 떨어져야한다
         elif server.mymap.tile[checkx1][checky1 - 1] == 0 and server.mymap.tile[checkx2][checky1 - 1] == 0:
-            server.mario.add_event(7)
             server.mario.jumpdir = -1
+            server.mario.add_event(7)
             return 7
     return 0
