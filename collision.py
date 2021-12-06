@@ -1,6 +1,7 @@
 import server
 import game_world
 from Mushroom import Mushroom
+from Flower import Flower
 import Character
 import pico2d
 
@@ -74,6 +75,10 @@ def collide_mario(a):
                 if checkx1 == 16:
                     mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(mushroom, 1)
+                elif checkx1 == 23:
+                    print('Collide')
+                    flower = Flower(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
+                    game_world.add_object(flower, 1)
                 server.mymap.tile[checkx1][checky2] = 7
             return 8
         # 위 오른블럭과 체크
@@ -84,6 +89,10 @@ def collide_mario(a):
                 if checkx2 == 16:
                     mushroom = Mushroom(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(mushroom, 1)
+                elif checkx2 == 23:
+                    print('Collide')
+                    flower = Flower(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
+                    game_world.add_object(flower, 1)
                 server.mymap.tile[checkx2][checky2] = 7
             return 8
         elif right_a + 1 >= left_2 and left_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and

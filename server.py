@@ -1,5 +1,6 @@
 mario = None
 mymap = None
-rockets = []
-goomba = []
+rocket = None
+goomba = None
 mushroom = None
+flower = None
