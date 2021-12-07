@@ -14,10 +14,12 @@ class Map:
             Map.image = [load_image('Resource\Tile\Tile%d.png' % x) for x in range(8)]
             Map.S_image = [load_image('Resource\Tile\STile%d.png' % x) for x in range(2)]
             Map.B_image = [load_image('Resource\Tile\BTile%d.png' % x) for x in range(2)]
-
+            Map.F_image = [load_image('Resource\Tile\Flag%d.png' % x) for x in range(2)]
+            Map.castle = load_image('Resource\Tile\Castle.png')
         self.tile = [[0 for _ in range(16)] for _ in range(255)]
         self.num = 1
         self.blocksize = 50
+        self.camerax = 0
         # 첫번째맵 함수로 빼든지 깔끔하게 수정필요
         for i in range(0, 16):
                 for j in range(0, 255):
@@ -57,7 +59,15 @@ class Map:
                         elif (j in range(136, 136 + 4)) or (j in range(142, 142 + 4)) or (j in range(149, 149 + 5)) or (j in range(156, 156+4))\
                                 or (j in range(183, 183 + 9)): # block
                             self.tile[j][i] = 7
-
+                        elif j == 200:
+                            for a in range(i, i + 11):
+                                self.tile[j][a] = -2
+                            self.tile[j][i] = 13
+                        elif j == 204:
+                            for a in range(j, j + 5):
+                                for b in range(i, i + 5):
+                                    self.tile[a][b] = -1
+                            self.tile[j][i] = 15
                     elif i == 3:
                         if j == 29 or j == 165 or j == 181:
                             self.tile[j][i] = 3  # PipeHL
@@ -113,11 +123,13 @@ class Map:
                             self.tile[j][i] = 6
                         elif j == 190 or j == 191: # block
                             self.tile[j][i] = 7
-        self.camerax = 0
+                    elif i == 11:
+                        if j == 199:
+                            self.tile[j][i] = 14
 
-        # for j in range(0, 255):
-        #     for i in range(0, 16):
-        #         print(self.tile[j][i])
+        for j in range(0, 255):
+            for i in range(0, 16):
+                print(self.tile[j][i])
 
     def draw(self):
         if self.num == 1:
@@ -154,8 +166,18 @@ class Map:
                                               (j * self.blocksize) + ((self.blocksize * 5) // 2) - self.camerax,
                                               i * self.blocksize + ((self.blocksize) // 2), self.blocksize * 5,
                                               self.blocksize)
-
-        # draw_rectangle(*self.get_Check_Box(8, 0))
+                    elif self.tile[j][i] == 13:
+                        Map.F_image[0].clip_draw(0, 0, 16, 176, (j * self.blocksize) + ((self.blocksize) // 2) - self.camerax,
+                                              i * self.blocksize + ((self.blocksize * 11) // 2), self.blocksize,
+                                              self.blocksize * 11)
+                    elif self.tile[j][i] == 14:
+                        Map.F_image[1].clip_draw(0, 0, 24, 16, (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
+                                              i * self.blocksize + ((self.blocksize) // 2), self.blocksize * 1.5,
+                                              self.blocksize)
+                    elif self.tile[j][i] == 15:
+                        Map.castle.clip_draw(0, 0, 80, 80, (j * self.blocksize) + ((self.blocksize * 5) // 2) - self.camerax,
+                                              i * self.blocksize + ((self.blocksize * 5) // 2), self.blocksize * 5,
+                                              self.blocksize * 5)
         for i in range(0, 16):
             for j in range(0, 254):
                  if self.tile[j][i] == 5:

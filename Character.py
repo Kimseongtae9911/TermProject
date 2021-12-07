@@ -97,7 +97,8 @@ class RunState:
 
             # 멈춰있을때도 acc==0 최대 속도로 달릴때도 acc==0
     def exit(mario, event):
-        pass
+        if mario.velocity == 100 or mario.velocity == -100:
+            mario.velocity = 0
 
     def do(mario):
         if mario.velocity == 0:
@@ -179,7 +180,8 @@ class DashState:
                 mario.velocity = RUN_SPEED
             else:
                 mario.velocity = -RUN_SPEED
-
+        elif mario.velocity == 100 or mario.velocity == -100:
+            mario.velocity = 0
 
     def do(mario):
         mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * (game_framework.frame_time * 2)) % 4
@@ -330,7 +332,8 @@ class JumpState:
         #     mario.jumpstart = mario.y
 
     def exit(mario, event):
-        pass
+        if mario.velocity == -100 or mario.velocity == 100:
+            mario.velocity = 0
 
     def do(mario):
         if mario.jump:
