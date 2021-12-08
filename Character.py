@@ -23,10 +23,10 @@ FRAMES_PER_ACTION = 4
 history = []
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, \
-    SHIFT_DOWN, SHIFT_UP, DEBUG_KEY, SPACE, STOP, FALL, DIE, COLLIDE, Fire = range(13)
+    SHIFT_DOWN, SHIFT_UP, DEBUG_KEY, SPACE, STOP, FALL, DIE, COLLIDE, Fire, End = range(14)
 
 event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP',
-    'SHIFT_DOWN', 'SHIFT_UP', 'DEBUG_KEY', 'SPACE', 'STOP', 'FALL', 'DIE', 'COLLIDE', 'Fire']
+    'SHIFT_DOWN', 'SHIFT_UP', 'DEBUG_KEY', 'SPACE', 'STOP', 'FALL', 'DIE', 'COLLIDE', 'Fire', 'End']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_SPACE): SPACE,
@@ -44,6 +44,7 @@ key_event_table = {
     (SDL_KEYUP, SDLK_LEFT): LEFT_UP
 }
 
+
 class IdleState:
     def enter(mario, event):
         mario.velocity = mario.acc = 0
@@ -53,7 +54,6 @@ class IdleState:
 
     def do(mario):
         pass
-
 
     def draw(mario):
         if mario.dir == 1:
@@ -437,6 +437,7 @@ class FallState:
                 mario.fl_image.clip_draw(mario.start, 0, 16, 32, mario.x, mario.y + mario.mariosizex // 2,
                                         mario.mariosizex, mario.mariosizey)
 
+
 class DieState:
     def enter(mario, event):
         mario.dir == 1
@@ -468,34 +469,88 @@ class DieState:
             mario.image.clip_draw(mario.start, 34, 16, 16, mario.x, mario.y, mario.mariosizex, mario.mariosizey)
 
 
+class EndState:
+    def enter(mario, event):
+        mario.velocity = RUN_SPEED
+        mario.acc = 0
+        mario.dir = -1
+
+    def exit(mario, event):
+        pass
+
+    def do(mario):
+        mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+        if mario.dir == 1:
+            mario.x += mario.velocity * game_framework.frame_time
+        else:
+            mario.y -= mario.velocity * game_framework.frame_time
+
+        if mario.y <= 175:
+            mario.dir = 1
+            mario.y = 125
+
+    def draw(mario):
+        if mario.dir == 1:
+            if mario.cur_life <= 1:
+                mario.start = 32
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y,
+                                      mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
+                                      mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 3:
+                mario.start = 21
+                mario.f_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
+                                        mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
+        else:
+            if mario.cur_life <= 1:
+                mario.start = 32
+                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y,
+                                        mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 2:
+                mario.start = 21
+                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
+                                        mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
+            elif mario.cur_life == 3:
+                mario.start = 21
+                mario.fl_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
+                                         mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
+
+
 next_state_table = {
     DashState: {SHIFT_UP: RunState, SHIFT_DOWN: DashState, RIGHT_DOWN: DashState, LEFT_DOWN: DashState,
                 LEFT_UP: AccState, RIGHT_UP: AccState, SPACE: JumpState, FALL: FallState, DIE: DieState, STOP: IdleState,
-                Fire: DashState},
+                Fire: DashState, End: EndState},
 
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
                 SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: JumpState, FALL: FallState, DIE: DieState, STOP: IdleState,
-                Fire: IdleState},
+                Fire: IdleState, End: EndState},
 
     RunState: {RIGHT_UP: AccState, LEFT_UP: AccState, LEFT_DOWN: RunState, RIGHT_DOWN: RunState,
                SHIFT_DOWN: DashState, SHIFT_UP: RunState, SPACE: JumpState, STOP: IdleState, FALL: FallState, DIE: DieState,
-               Fire: RunState},
+               Fire: RunState, End: EndState},
 
     AccState: {RIGHT_UP: AccState, LEFT_UP: AccState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
                SHIFT_DOWN: AccState, SHIFT_UP: AccState, STOP: IdleState, SPACE: JumpState, FALL: FallState, DIE: DieState,
-               Fire: AccState},
+               Fire: AccState, End: EndState},
 
     JumpState: {RIGHT_UP: JumpState, LEFT_UP: JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN: JumpState,
                SHIFT_DOWN: JumpState, SHIFT_UP: JumpState, STOP: RunState, SPACE: JumpState, FALL: FallState, DIE: DieState,
-                COLLIDE: JumpState, Fire: JumpState},
+                COLLIDE: JumpState, Fire: JumpState, End: EndState},
 
     FallState: {RIGHT_UP: FallState, LEFT_UP: FallState, RIGHT_DOWN: FallState, LEFT_DOWN: FallState,
                 SHIFT_DOWN: FallState, SHIFT_UP: FallState, SPACE: FallState, FALL: FallState, DIE: DieState, STOP: FallState,
-                Fire: FallState},
+                Fire: FallState, End: EndState},
 
     DieState: {RIGHT_UP: DieState, LEFT_UP: DieState, RIGHT_DOWN: DieState, LEFT_DOWN: DieState,
                 SHIFT_DOWN: DieState, SHIFT_UP: DieState, SPACE: DieState, FALL: DieState, DIE: DieState, STOP: IdleState, COLLIDE: DieState,
-               Fire: DieState}
+               Fire: DieState, End: EndState},
+
+    EndState: {RIGHT_UP: EndState, LEFT_UP: EndState, RIGHT_DOWN: EndState, LEFT_DOWN: EndState,
+                SHIFT_DOWN: EndState, SHIFT_UP: EndState, SPACE: EndState, FALL: EndState, End: EndState, STOP: EndState, COLLIDE: EndState,
+               Fire: EndState, End: EndState}
+
 }
 
 
