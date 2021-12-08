@@ -4,4 +4,4 @@ rocket = None
 goomba = None
 mushroom = None
 flower = None
-stage = 2
+stage = 1

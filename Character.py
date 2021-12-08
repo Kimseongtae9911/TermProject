@@ -578,7 +578,12 @@ class Mario:
             Mario.l_image = load_image('Resource\Mario_left.png')
             Mario.f_image = load_image('Resource\FireMario.png')
             Mario.fl_image = load_image('Resource\FireMario_left.png')
-        self.x, self.y = 300, 125
+        if server.stage <= 2:
+            self.x = 300
+            self.y = 125
+        else:
+            self.x = 100
+            self.y = 425
         self.frame = 0
         self.dir = 1
         self.velocity = 0
@@ -610,8 +615,8 @@ class Mario:
 
         self.timer -= 5
         if self.timer <= 0:
-            # server.rocket = Rocket(SCREENW, self.y)
-            # game_world.add_object(server.rocket, 1)
+            server.rocket = Rocket(SCREENW, self.y)
+            game_world.add_object(server.rocket, 1)
             self.timer = 1000
 
         if self.cur_life == 0:

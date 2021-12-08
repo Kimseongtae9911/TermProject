@@ -19,17 +19,19 @@ name = "LoadingState"
 SCREENW = 1280; SCREENH = 800
 image = None
 numbers = None
+press = None
 timer = 1000
 
 
 def enter():
-    global image, numbers, timer
+    global image, numbers, timer, press
     if server.mario == None:
         server.mario = Mario()
     if server.mymap == None:
         server.mymap = Map()
     image = load_image('Resource\loading.png')
     numbers = load_image('Resource\_Number.png')
+    press = load_image('Resource\Press_L.png')
     hide_cursor()
     hide_lattice()
     if server.mario.life == 0:
@@ -143,6 +145,7 @@ def draw():
     numbers.clip_draw(server.stage * 9, 0, 9, 8, SCREENW // 2 + 50, SCREENH // 2 + 130, 50, 50)
     numbers.clip_draw(server.stage * 9, 0, 9, 8, SCREENW // 2 + 100, SCREENH // 2 + 360, 50, 50)
     numbers.clip_draw(server.mario.life * 9, 0, 9, 8, SCREENW // 2 + 50, SCREENH // 2 + 15, 50, 50)
+    press.clip_draw(0, 0, 300, 57, SCREENW // 2, 200)
     update_canvas()
 
 
