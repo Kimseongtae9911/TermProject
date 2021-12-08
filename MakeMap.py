@@ -10,126 +10,150 @@ class Map:
     image = None
     def __init__(self):
         if(Map.image == None):
-            Map.Basetile = load_image('Resource\Tile\Basetile.png')
-            Map.image = [load_image('Resource\Tile\Tile%d.png' % x) for x in range(8)]
-            Map.S_image = [load_image('Resource\Tile\STile%d.png' % x) for x in range(2)]
-            Map.B_image = [load_image('Resource\Tile\BTile%d.png' % x) for x in range(2)]
-            Map.F_image = [load_image('Resource\Tile\Flag%d.png' % x) for x in range(2)]
-            Map.castle = load_image('Resource\Tile\Castle.png')
+            Map.Basetile = load_image('Resource\Tile\Basetile.png') #8 Base
+            Map.image = [load_image('Resource\Tile\Tile%d.png' % x) for x in range(12)] #0Sky, 1PipeBL, 2PiprBR, 3PipeHL, 4PipeHR, 5ques, 6brick, 7block, 16LeafL, 17LeafM, 18LeafR, 19Tree
+            Map.S_image = [load_image('Resource\Tile\STile%d.png' % x) for x in range(2)] #9Mountain, #11 1Grass
+            Map.B_image = [load_image('Resource\Tile\BTile%d.png' % x) for x in range(2)] #10Mountain #12 3frass
+            Map.F_image = [load_image('Resource\Tile\Flag%d.png' % x) for x in range(2)] #13Flag #14Flag
+            Map.castle = load_image('Resource\Tile\Castle.png') #15Castle
         self.tile = [[0 for _ in range(16)] for _ in range(255)]
         self.num = 1
         self.blocksize = 50
         self.camerax = 0
         # 첫번째맵 함수로 빼든지 깔끔하게 수정필요
-        for i in range(0, 16):
-                for j in range(0, 255):
-                    if i == 0 or i == 1:
-                        if j == 70 or j == 71 or j == 87 or j == 88 or j == 89 or j == 154 or j == 155:
-                            self.tile[j][i] = 0  # Sky
-                        else:
-                            self.tile[j][i] = 8  # Base
-                    elif i == 2:
-                        if j == 0 or j == 49 or j == 98 or j == 194:  # Big Mountain
-                            for a in range(j, j + 5):
-                                for b in range(i, i + 3):
-                                    self.tile[a][b] = -1
-                            self.tile[j][i] = 10
 
-                        elif j == 11 or j == 60 or j == 72 or j == 91 or j == 109:  # 3Grass
-                            for a in range(j, j + 5):
-                                self.tile[a][i] = -1
-                            self.tile[j][i] = 12
-
-                        elif j == 16 or j == 66 or j == 114 or j == 146 or j == 162 or j == 214:  # Small Mountain
-                            for a in range(j, j + 3):
-                                for b in range(i, i + 2):
-                                    self.tile[a][b] = -1
-                            self.tile[j][i] = 9
-
-                        elif j == 24 or j == 121 or j == 169:  # 1Grass
-                            for a in range(j, j + 3):
-                                self.tile[a][i] = -1
-                            self.tile[j][i] = 11
-
-                        elif j == 29 or j == 39 or j == 47 or j == 58 or j == 165 or j == 181:
-                            self.tile[j][i] = 1  # PipeBL
-                        elif j == 30 or j == 40 or j == 48 or j == 59 or j == 166 or j == 182:
-                            self.tile[j][i] = 2  # PipeBR
-
-                        elif (j in range(136, 136 + 4)) or (j in range(142, 142 + 4)) or (j in range(149, 149 + 5)) or (j in range(156, 156+4))\
-                                or (j in range(183, 183 + 9)): # block
-                            self.tile[j][i] = 7
-                        elif j == 200:
-                            for a in range(i, i + 11):
-                                self.tile[j][a] = -2
-                            self.tile[j][i] = 13
-                        elif j == 204:
-                            for a in range(j, j + 5):
-                                for b in range(i, i + 5):
-                                    self.tile[a][b] = -1
-                            self.tile[j][i] = 15
-                    elif i == 3:
-                        if j == 29 or j == 165 or j == 181:
-                            self.tile[j][i] = 3  # PipeHL
-                        elif j == 30 or j == 166 or j == 182:
-                            self.tile[j][i] = 4  # PipeHR
-                        elif j == 39 or j == 47 or j == 58:
-                            self.tile[j][i] = 1  # PipeBL
-                        elif j == 40 or j == 48 or j == 59:
-                            self.tile[j][i] = 2  # PipeBR
-                        elif (j in range(137, 137+3)) or (j in range(142, 142+3)) or (j in range(150, 150+4)) or (j in range(156, 156+3))\
-                                or (j in range(184, 184 + 8)): # block
-                            self.tile[j][i] = 7
-
-                    elif i == 4:
-                        if j == 39:  # PipeHL
-                            self.tile[j][i] = 3
-                        elif j == 40:  # PipeHR
-                            self.tile[j][i] = 4
-                        elif j == 47 or j == 58:
-                            self.tile[j][i] = 1
-                        elif j == 48 or j == 59:
-                            self.tile[j][i] = 2
-                        elif (j in range(138, 138+2)) or (j in range(142, 142+2)) or (j in range(151, 151+3)) or (j in range(156, 156+2))\
-                                or (j in range(185, 185 + 7)): # block
-                            self.tile[j][i] = 7
-
-                    elif i == 5:
-                        if j == 16 or j == 22 or j == 24 or j == 79 or j == 108 or j == 111 or j == 114 or j == 172:  # questiontile
-                            self.tile[j][i] = 5
-                        elif j == 21 or j == 23 or j == 25 or j == 78 or j == 80 or j == 96 or j == 102 or j == 103 or j == 120\
-                                or j == 131 or j == 132 or j == 170 or j == 171 or j == 173:  # brick
-                            self.tile[j][i] = 6
-                        elif j == 47 or j == 58: # PipeHL
-                            self.tile[j][i] = 3
-                        elif j == 48 or j == 59: # PipeHR
-                            self.tile[j][i] = 4
-                        elif j == 139 or j == 142 or j == 152 or j == 153 or j == 156 or (j in range(186, 186 + 6)): # block
-                            self.tile[j][i] = 7
-
-                    elif i == 6:
-                        if (j in range(187, 187 + 5)): # block
-                            self.tile[j][i] = 7
-                    elif i == 7:
-                        if (j in range(188, 188 + 4)): # block
-                            self.tile[j][i] = 7
-                    elif i == 8:
-                        if (j in range(189, 189 + 3)): # block
-                            self.tile[j][i] = 7
-                    elif i == 9:
-                        if j == 23 or j == 96 or j == 111 or j == 131 or j == 132:  # questiontile
-                            self.tile[j][i] = 5
-                        elif (j in range(81, 89 + 1)) or (j in range(93, 95 + 1) or (j in range(123, 123+3)) or j == 130 or j == 133):  # brick
-                            self.tile[j][i] = 6
-                        elif j == 190 or j == 191: # block
-                            self.tile[j][i] = 7
-                    elif i == 11:
-                        if j == 199:
-                            self.tile[j][i] = 14
-
-        for j in range(0, 255):
-            for i in range(0, 16):
-                print(self.tile[j][i])
+        # for i in range(0, 16):
+        #     for j in range(0, 255):
+        #         self.tile[j][i] = 0
+        #
+        # for i in range(0, 16):
+        #     for j in range(0, 255):
+        #        if i == 0:
+        #             if j == 0:
+        #                 for a in range(j, j+16):
+        #                     self.tile[a][i] = 8; self.tile[a][i+1] = 8
+        #             elif j == 127:
+        #                 for a in range(j, j+40):
+        #                     self.tile[a][i] = 8; self.tile[a][i+1] = 8
+        #             elif j in [19, 20, 25, 26, 27, 28, 29, 30, 33, 36, 37, 38, 41, 42, 43, 44, 45, 51, 52, 60, 61, 62, 66, 67, 68,71,77,78,79,80,99,100,105,106,107,108,109,110,114,117,118,123,124]:
+        #                 self.tile[j][i] = 19
+        #        elif i == 1:
+        #             if j in [19, 20, 25, 26, 27, 28, 29, 30, 33, 36, 37, 38, 41, 42, 43, 44, 45,71,77,78,79,80,99,100,105,106,107,108,109,110,117,118,123,124]:
+        #                 self.tile[j][i] = 19
+        #             elif j in [50,59,65,113]:
+        #                 self.tile[j][i] = 16
+        #             elif j in [51,52,60,61,62,66,67,68,114]:
+        #                 self.tile[j][i] = 17
+        #             elif j in [53,63,69,115]:
+        #                 self.tile[j][i] = 18
+        #        elif i == 2:
+        #             if j == 0 or j == 153:
+        #                 for a in range(j, j +5):
+        #                     for b in range(i, i+5):
+        #                         self.tile[a][b] = -1
+        #                 self.tile[j][i] = 15
+        #             elif j in [136,137,138,139,140,141]:
+        #                 self.tile[j][i] = 7
+        #             elif j in [18, 32]:
+        #                 self.tile[j][i] = 16
+        #             elif j in [19, 20, 33]:
+        #                 self.tile[j][i] = 17
+        #             elif j in [21, 34]:
+        #                 self.tile[j][i] = 18
+        #             elif j in [25, 26, 27, 28, 29, 30, 36, 37, 38, 41, 42, 43, 44, 45,61,62,71,77,78,79,80,99,100,105,106,107,108,109,110,117,118,123,124]:
+        #                 self.tile[j][i] = 19
+        #             elif j == 150:
+        #                 for a in range(i, i+11):
+        #                     self.tile[j][a] = -2
+        #                 self.tile[j][i] = 13
+        #             elif j == 156:
+        #                 self.tile[j][i] = -3
+        #        elif i == 3:
+        #             if j in [25, 26, 27, 28, 29, 30, 36, 37, 38, 41, 42, 43, 44, 45,61,62,71,77,78,79,80,105,106,107,108,109,110,117,118,123,124]:
+        #                 self.tile[j][i] = 19
+        #             elif j in [98]:
+        #                 self.tile[j][i] = 16
+        #             elif j in [99,100]:
+        #                 self.tile[j][i] = 17
+        #             elif j in [101]:
+        #                 self.tile[j][i] = 18
+        #             elif j in [136,137,138,139,140,141]:
+        #                 self.tile[j][i] = 7
+        #        elif i == 4:
+        #            if j in [25, 26, 27, 28, 29, 30, 36, 37, 38, 41, 42, 43, 44, 45,61,62,71,77,78,79,80,105,106,107,108,109,110,117,118,123,124]:
+        #                self.tile[j][i] = 19
+        #            elif j == 59:
+        #                self.tile[j][i] = 5
+        #            elif j in [136, 137, 138, 139, 140, 141]:
+        #                self.tile[j][i] = 7
+        #        elif i == 5:
+        #            if j in [36, 37, 38, 41, 42, 43, 44, 45,61,62,77,78,79,80,105,106,107,108,109,110]:
+        #                self.tile[j][i] = 19
+        #            elif j in [24,70,116,122]:
+        #                self.tile[j][i] = 16
+        #            elif j in [25,26,27,28,29,30,71,117,118,123,124]:
+        #                self.tile[j][i] = 17
+        #            elif j in [31,72,119,125]:
+        #                self.tile[j][i] = 18
+        #            elif j in [94,95,96,136, 137, 138, 139, 140, 141]:
+        #                self.tile[j][i] = 7
+        #        elif i == 6:
+        #            if j in [27,28,29,41,42,43,44,45,61,62,77,78,79,80,105,106,107,108,109,110]:
+        #                self.tile[j][i] = 19
+        #            elif j in [35]:
+        #                self.tile[j][i] = 16
+        #            elif j in [36,37,38]:
+        #                self.tile[j][i] = 17
+        #            elif j in [39]:
+        #                self.tile[j][i] = 18
+        #            elif j in [86,87,88,138, 139, 140, 141]:
+        #                self.tile[j][i] = 7
+        #        elif i == 7:
+        #            if j in [27,28,29,41,42,43,44,45,61,62,77,78,79,80]:
+        #                self.tile[j][i] = 19
+        #            elif j in [104]:
+        #                self.tile[j][i] = 16
+        #            elif j in [105,106,107,108,109,110]:
+        #                self.tile[j][i] = 17
+        #            elif j in [111]:
+        #                self.tile[j][i] = 18
+        #            elif j in [138,139,140,141]:
+        #                self.tile[j][i] = 7
+        #        elif i == 8:
+        #            if j in [27,28,29,41,42,43,44,45,61,62]:
+        #                self.tile[j][i] = 19
+        #            elif j in [76]:
+        #                self.tile[j][i] = 16
+        #            elif j in [77,78,79,80]:
+        #                self.tile[j][i] = 17
+        #            elif j in [81]:
+        #                self.tile[j][i] = 18
+        #            elif j in [140, 141]:
+        #                self.tile[j][i] = 7
+        #        elif i == 9:
+        #            if j in [26,60]:
+        #                self.tile[j][i] = 16
+        #            elif j in [27,28,29,61,62]:
+        #                self.tile[j][i] = 17
+        #            elif j in [30,63]:
+        #                self.tile[j][i] = 18
+        #            elif j in [41,42,43,44,45]:
+        #                self.tile[j][i] = 19
+        #            elif j in [140, 141]:
+        #                self.tile[j][i] = 7
+        #        elif i == 10:
+        #            if j in [40]:
+        #                self.tile[j][i] = 16
+        #            elif j in [41,42,43,44,45]:
+        #                self.tile[j][i] = 17
+        #            elif j == 46:
+        #                self.tile[j][i] = 18
+        #        elif i == 11:
+        #            if j == 149:
+        #                self.tile[j][i] = 14
+        # for j in range(0, 255):
+        #     for i in range(0, 16):
+        #         print(self.tile[j][i])
 
     def draw(self):
         if self.num == 1:
@@ -141,6 +165,12 @@ class Map:
                                                   (j * self.blocksize) + (self.blocksize // 2) - self.camerax,
                                                   i * self.blocksize + (self.blocksize // 2), self.blocksize,
                                                   self.blocksize)
+                    elif self.tile[j][i] in range(16, 20):
+                        Map.image[self.tile[j][i] - 8].clip_draw(0, 0, 16, 16,
+                                                             (j * self.blocksize) + (
+                                                                         self.blocksize // 2) - self.camerax,
+                                                             i * self.blocksize + (self.blocksize // 2), self.blocksize,
+                                                             self.blocksize)
                     elif self.tile[j][i] == 8 and i != 1:
                         Map.Basetile.clip_draw(0, 0, 16, 32,
                                                 (j * self.blocksize) + (self.blocksize // 2) - self.camerax,

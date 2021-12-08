@@ -68,17 +68,42 @@ def create_new_world():
 
     cnti = 0
     cntj = 0
-    with open('map_data.txt', 'rt') as f:
-        while True:
-            c = f.readline()
-            if c == '':
-                break
-            temp = int(c)
-            server.mymap.tile[cntj][cnti] = temp
-            cnti += 1
-            if cnti == 16:
-                cnti = 0
-                cntj += 1
+    if server.stage == 1:
+        with open('map_data1.txt', 'rt') as f:
+            while True:
+                c = f.readline()
+                if c == '':
+                    break
+                temp = int(c)
+                server.mymap.tile[cntj][cnti] = temp
+                cnti += 1
+                if cnti == 16:
+                    cnti = 0
+                    cntj += 1
+    elif server.stage == 2:
+        with open('map_data2.txt', 'rt') as f:
+            while True:
+                c = f.readline()
+                if c == '':
+                    break
+                temp = int(c)
+                server.mymap.tile[cntj][cnti] = temp
+                cnti += 1
+                if cnti == 16:
+                    cnti = 0
+                    cntj += 1
+    elif server.stage == 3:
+        with open('map_data3.txt', 'rt') as f:
+            while True:
+                c = f.readline()
+                if c == '':
+                    break
+                temp = int(c)
+                server.mymap.tile[cntj][cnti] = temp
+                cnti += 1
+                if cnti == 16:
+                    cnti = 0
+                    cntj += 1
 
 
 def load_saved_world():
@@ -115,8 +140,8 @@ def draw():
     clear_canvas()
     image.clip_draw(0, 0, 964, 664, SCREENW // 2, SCREENH // 2, SCREENW, SCREENH)
 
-    numbers.clip_draw(server.mymap.num * 9, 0, 9, 8, SCREENW // 2 + 50, SCREENH // 2 + 130, 50, 50)
-    numbers.clip_draw(server.mymap.num * 9, 0, 9, 8, SCREENW // 2 + 100, SCREENH // 2 + 360, 50, 50)
+    numbers.clip_draw(server.stage * 9, 0, 9, 8, SCREENW // 2 + 50, SCREENH // 2 + 130, 50, 50)
+    numbers.clip_draw(server.stage * 9, 0, 9, 8, SCREENW // 2 + 100, SCREENH // 2 + 360, 50, 50)
     numbers.clip_draw(server.mario.life * 9, 0, 9, 8, SCREENW // 2 + 50, SCREENH // 2 + 15, 50, 50)
     update_canvas()
 

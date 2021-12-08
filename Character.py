@@ -1,4 +1,5 @@
 from pico2d import *
+import time
 import game_world
 import game_framework
 import loading_state
@@ -13,6 +14,7 @@ PIXEL_PER_METER = (15.0 / 0.3)
 RUN_SPEED_MPM = (25 * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED = (RUN_SPEED_MPS * PIXEL_PER_METER)
+WALK_SPEED = RUN_SPEED - 100
 DASH_SPEED = RUN_SPEED + 100
 JUMP_SPEED = RUN_SPEED + 10
 
@@ -471,23 +473,36 @@ class DieState:
 
 class EndState:
     def enter(mario, event):
-        mario.velocity = RUN_SPEED
-        mario.acc = 0
-        mario.dir = -1
+        if event == End:
+            mario.velocity = WALK_SPEED
+            mario.acc = 0
+            mario.dir = -1
+            mario.mapx += server.mymap.blocksize // 4
 
     def exit(mario, event):
         pass
 
     def do(mario):
-        mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+        mario.timer = 1000
         if mario.dir == 1:
-            mario.x += mario.velocity * game_framework.frame_time
+            mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+            mario.mapx += mario.velocity * game_framework.frame_time
+            if collision.collide_mario(mario) == 9:
+                time.sleep(1)
+                if server.stage <= 2:
+                    server.stage += 1
+                game_framework.change_state(loading_state)
         else:
+            if mario.cur_life <= 1:
+                mario.frame = 0
+            else:
+                mario.frame = (mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
             mario.y -= mario.velocity * game_framework.frame_time
 
-        if mario.y <= 175:
+        if mario.y <= 175 and mario.y > 125:
             mario.dir = 1
             mario.y = 125
+            mario.frame = 0
 
     def draw(mario):
         if mario.dir == 1:
@@ -505,16 +520,16 @@ class EndState:
                                         mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
         else:
             if mario.cur_life <= 1:
-                mario.start = 32
-                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y,
+                mario.start = 207
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 15, 34, 16, 16, mario.x, mario.y,
                                         mario.mariosizex, mario.mariosizey)
             elif mario.cur_life == 2:
-                mario.start = 21
-                mario.l_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
+                mario.start = 168
+                mario.image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
                                         mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
             elif mario.cur_life == 3:
-                mario.start = 21
-                mario.fl_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
+                mario.start = 168
+                mario.f_image.clip_draw(mario.start + (int(mario.frame)) * 21, 0, 16, 32, mario.x,
                                          mario.y + mario.mariosizex // 2, mario.mariosizex, mario.mariosizey)
 
 
@@ -595,8 +610,8 @@ class Mario:
 
         self.timer -= 5
         if self.timer <= 0:
-            server.rocket = Rocket(SCREENW, self.y)
-            game_world.add_object(server.rocket, 1)
+            # server.rocket = Rocket(SCREENW, self.y)
+            # game_world.add_object(server.rocket, 1)
             self.timer = 1000
 
         if self.cur_life == 0:
@@ -619,6 +634,7 @@ class Mario:
 
 
         self.collide_num = collision.collide_mario(self)
+
         if (collision.collide_base(self, server.mymap)):
             self.add_event(FALL)
 

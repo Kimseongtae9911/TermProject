@@ -49,7 +49,9 @@ def collide_mario(a):
         if bottom_a <= top_2 and top_a >= top_2 and right_a >= left_2 and right_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
         server.mymap.tile[checkx2][checky1] != 9 and server.mymap.tile[checkx2][checky1] != 10 and server.mymap.tile[checkx2][checky1] != 11 and
         server.mymap.tile[checkx2][checky1] != 12 and server.mymap.tile[checkx2][checky1] != -1) and server.mario.jumpdir == -1:
-            if server.mario.jumpdir == -1:
+            if server.mymap.tile[checkx2][checky1] == -2:
+                server.mario.add_event(13)
+            elif server.mario.jumpdir == -1:
                 server.mario.add_event(8)
                 server.mario.jump = False
                 server.mario.jumpdir = 1
@@ -60,7 +62,9 @@ def collide_mario(a):
         elif bottom_a <= top_1 and top_a >= top_1 and left_a >= left_1 and left_a <= right_1 and (server.mymap.tile[checkx1][checky1] != 0 and server.mymap.tile[checkx1][checky1] != 8 and
         server.mymap.tile[checkx1][checky1] != 9 and server.mymap.tile[checkx1][checky1] != 10 and server.mymap.tile[checkx1][checky1] != 11 and
         server.mymap.tile[checkx1][checky1] != 12 and server.mymap.tile[checkx1][checky1] != -1) and server.mario.jumpdir == -1:
-            if server.mario.jumpdir == -1:
+            if server.mymap.tile[checkx2][checky1] == -2:
+                server.mario.add_event(13)
+            elif server.mario.jumpdir == -1:
                 server.mario.add_event(8)
                 server.mario.jump = False
                 server.mario.jumpdir = 1
@@ -71,12 +75,13 @@ def collide_mario(a):
         elif top_a >= bottom_3 and bottom_a <= bottom_3 and left_a >= left_3 and left_a <= right_3 and (server.mymap.tile[checkx1][checky2] != 0 and server.mymap.tile[checkx1][checky2] != 8 and
         server.mymap.tile[checkx1][checky2] != 9 and server.mymap.tile[checkx1][checky2] != 10 and server.mymap.tile[checkx1][checky2] != 11 and
         server.mymap.tile[checkx1][checky2] != 12 and server.mymap.tile[checkx1][checky2] != -1):
-            if server.mymap.tile[checkx1][checky2] == 5:
+            if server.mymap.tile[checkx2][checky1] == -2:
+                server.mario.add_event(13)
+            elif server.mymap.tile[checkx1][checky2] == 5:
                 if checkx1 == 16:
                     mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(mushroom, 1)
                 elif checkx1 == 23:
-                    print('Collide')
                     flower = Flower(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(flower, 1)
                 server.mymap.tile[checkx1][checky2] = 7
@@ -85,12 +90,13 @@ def collide_mario(a):
         elif top_a >= bottom_4 and bottom_a <= bottom_4 and right_a >= left_4 and right_a <= right_4 and (server.mymap.tile[checkx2][checky2] != 0 and server.mymap.tile[checkx2][checky2] != 8 and
         server.mymap.tile[checkx2][checky2] != 9 and server.mymap.tile[checkx2][checky2] != 10 and server.mymap.tile[checkx2][checky2] != 11 and
         server.mymap.tile[checkx2][checky2] != 12 and server.mymap.tile[checkx2][checky2] != -1):
-            if server.mymap.tile[checkx2][checky2] == 5:
+            if server.mymap.tile[checkx2][checky1] == -2:
+                server.mario.add_event(13)
+            elif server.mymap.tile[checkx2][checky2] == 5:
                 if checkx2 == 16:
                     mushroom = Mushroom(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(mushroom, 1)
                 elif checkx2 == 23:
-                    print('Collide')
                     flower = Flower(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(flower, 1)
                 server.mymap.tile[checkx2][checky2] = 7
@@ -128,4 +134,11 @@ def collide_mario(a):
             server.mario.jumpdir = -1
             server.mario.add_event(7)
             return 7
+    elif server.mario.cur_state == Character.EndState:
+        if right_a + 1 >= left_2 and left_a <= right_2 and (server.mymap.tile[checkx2][checky1] != 0 and server.mymap.tile[checkx2][checky1] != 8 and
+        server.mymap.tile[checkx2][checky1] != 9 and server.mymap.tile[checkx2][checky1] != 10 and server.mymap.tile[checkx2][checky1] != 11 and
+        server.mymap.tile[checkx2][checky1] != 12 and server.mymap.tile[checkx2][checky1] != -1) and server.mario.dir == 1:
+            if server.mymap.tile[checkx2][checky1] == -3:
+                server.mario.mapx = checkx2 * 50 - server.mario.x
+                return 9
     return 0
