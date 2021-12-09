@@ -1,7 +1,11 @@
 mario = None
 mymap = None
 rocket = None
+goombas = []
 goomba = None
 mushroom = None
+boss = None
 flower = None
 stage = 1
+bgm = None
+clear = False

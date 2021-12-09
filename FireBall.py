@@ -20,16 +20,25 @@ class FireBall:
     def update(self):
         self.x += self.dir * 700 * game_framework.frame_time
 
-        if self.x < 25 or self.x > 1280 - 25:
+        if self.x < 25 or self.x > 1280:
             game_world.remove_object(self)
 
-        if collision.collide(self, server.rocket):
-            game_world.remove_object(self)
-            game_world.remove_object(server.rocket)
-        # elif collision.collide(self, server.goomba):
-        #     game_world.remove_object(self)
-        #     game_world.remove_object(server.goomba)
-
+        if server.rocket != None:
+            if collision.collide(self, server.rocket):
+                game_world.remove_object(self)
+                game_world.remove_object(server.rocket)
+                server.mario.kick_sound.play()
+        if server.goombas != []:
+            for goomba in server.goombas:
+                if collision.collide(self, goomba):
+                    game_world.remove_object(self)
+                    game_world.remove_object(goomba)
+                    server.mario.kick_sound.play()
+        if server.boss != None:
+            if collision.collide(self, server.boss):
+                game_world.remove_object(self)
+                server.boss.life -= 1
+                server.mario.kick_sound.play()
     def get_Check_Box(self):
         return self.x - self.size // 2, self.y - self.size // 2, self.x + (self.size // 2), self.y + self.size // 2
 

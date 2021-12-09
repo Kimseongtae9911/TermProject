@@ -3,11 +3,11 @@ import time
 import game_world
 import game_framework
 import loading_state
-import main_state
 import server
 import collision
 from Rocket import Rocket
 from FireBall import FireBall
+from Goomba import Goomba
 SCREENW = 1280
 
 PIXEL_PER_METER = (15.0 / 0.3)
@@ -322,6 +322,7 @@ class JumpState:
             mario.jumpdir = -1
         elif event == SPACE:
             if mario.jump == False and mario.jumpdir != -1:
+                mario.sound_jump()
                 mario.jumpstart = mario.y
                 mario.jump = True
                 mario.jumpdir = 1
@@ -474,6 +475,8 @@ class DieState:
 class EndState:
     def enter(mario, event):
         if event == End:
+            server.bgm.pause()
+            mario.flag_sound.play()
             mario.velocity = WALK_SPEED
             mario.acc = 0
             mario.dir = -1
@@ -491,6 +494,7 @@ class EndState:
                 time.sleep(1)
                 if server.stage <= 2:
                     server.stage += 1
+                server.bgm.resume()
                 game_framework.change_state(loading_state)
         else:
             if mario.cur_life <= 1:
@@ -596,10 +600,44 @@ class Mario:
         self.mariosizex = self.mariosizey = 50
         self.timer = 1000
         self.life = 3
-        self.cur_life = 1
+        if server.stage == 3:
+            self.cur_life = 3
+        else:
+            self.cur_life = 1
         self.jumpdir = 1
         self.collide_num = 0
         self.jumpstart = 125
+        self.font = load_font('Resource\ENCR10B.TTF', 20)
+        self.up_sound = load_wav('Resource\Sound\Power_up.wav')
+        self.up_sound.set_volume(32)
+        self.down_sound = load_wav('Resource\Sound\Power_down.wav')
+        self.down_sound.set_volume(32)
+        self.fire_sound = load_wav('Resource\Sound\Fireball.wav')
+        self.fire_sound.set_volume(20)
+        self.die_sound = load_wav('Resource\Sound\Mario_die.wav')
+        self.die_sound.set_volume(32)
+        self.jump_sound = load_wav('Resource\Sound\Jump.wav')
+        self.jump_sound.set_volume(16)
+        self.flag_sound = load_music('Resource\Sound\Flag.mp3')
+        self.flag_sound.set_volume(16)
+        self.kick_sound = load_wav('Resource\Sound\smw_kick.wav')
+        self.kick_sound.set_volume(20)
+        server.bgm.repeat_play()
+
+    def up(self):
+        self.up_sound.play()
+
+    def down(self):
+        self.down_sound.play()
+
+    def sound_fire(self):
+        self.fire_sound.play()
+
+    def sound_die(self):
+        self.die_sound.play()
+
+    def sound_jump(self):
+        self.jump_sound.play()
 
     def reset(self):
         pass
@@ -608,6 +646,7 @@ class Mario:
         self.event_que.insert(0, event)
 
     def update(self):
+        # print(self.y)
         if self.cur_life <= 1:
             self.mariosizex = 50; self.mariosizey = 50;
         elif self.cur_life >= 2:
@@ -615,9 +654,14 @@ class Mario:
 
         self.timer -= 5
         if self.timer <= 0:
-            server.rocket = Rocket(SCREENW, self.y)
-            game_world.add_object(server.rocket, 1)
-            self.timer = 1000
+            if server.stage == 1:
+                server.rocket = Rocket(SCREENW, self.y)
+                game_world.add_object(server.rocket, 1)
+                self.timer = 1000
+            elif server.stage == 2:
+                server.rocket = Rocket(SCREENW, self.y)
+                game_world.add_object(server.rocket, 1)
+                self.timer = 700
 
         if self.cur_life == 0:
             self.cur_life = 1
@@ -642,6 +686,7 @@ class Mario:
 
         if (collision.collide_base(self, server.mymap)):
             self.add_event(FALL)
+            server.mario.sound_die()
 
         elif self.collide_num == 8:
             self.jumpdir = -1
@@ -649,9 +694,11 @@ class Mario:
 
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_Check_Box())
+        if server.stage != 3:
+            self.font.draw(1240, server.mario.y, str(server.mario.timer), (255, 0, 0))
+        # draw_rectangle(*self.get_Check_Box())
         left, bottom, right, top = self.get_Check_Box()
-        debug_print('Velocity : ' + str(self.velocity) + '  Dir: ' + str(self.dir) + '  Acc: ' + str(self.acc))
+        # debug_print('Velocity : ' + str(self.velocity) + '  Dir: ' + str(self.dir) + '  Acc: ' + str(self.acc))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -659,10 +706,7 @@ class Mario:
             if DEBUG_KEY == key_event:
                 print(history[-10:])
             elif key_event == Fire and self.cur_life == 3:
-                if self.dir == 1:
-                    self.fire()
-                else:
-                    self.fire()
+                self.fire()
             else:
                 self.add_event(key_event)
 
@@ -684,6 +728,7 @@ class Mario:
     def fire(self):
         fireball = FireBall(self.x, self.y, self.dir)
         game_world.add_object(fireball, 1)
+        self.sound_fire()
 
     def __getstate__(self):
         state = {'x': self.x, 'y': self.y, 'dir': self.dir, 'mariosizex': self.mariosizex,

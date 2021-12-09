@@ -10,7 +10,7 @@ import math
 SCREENW = 1280
 
 PIXEL_PER_METER = (15.0 / 0.3)
-MOVE_SPEED_MPM = (6 * 1000.0 / 60.0)
+MOVE_SPEED_MPM = (5 * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
@@ -37,19 +37,26 @@ class Move_RState:
 
     def do(Goomba):
         Goomba.camerax = server.mario.get_MapX()
-        Goomba.x += MOVE_SPEED * game_framework.frame_time
+        if Goomba.die == False:
+            Goomba.x += MOVE_SPEED * game_framework.frame_time
         Goomba.frame = (Goomba.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         tempx, tempy = (Goomba.x - Goomba.camerax - 25) // 50, math.ceil((Goomba.y - 25) / 50)
 
         if server.mymap.tile[int(tempx)][(tempy) - 1] == 0:
-            Goomba.y -= (MOVE_SPEED + 100) * game_framework.frame_time
+            Goomba.y -= (MOVE_SPEED + 300) * game_framework.frame_time
+            if Goomba.y < 125:
+                Goomba.y = 125
 
-        if Goomba.x < 25:
+        if Goomba.x < 25 or Goomba.x > 10000:
             game_world.remove_object(Goomba)
 
-    def draw(Goomba):
-        Goomba.image.clip_draw(int(Goomba.frame) * 16, 0, 16, 16, Goomba.x - Goomba.camerax, Goomba.y, Goomba.sizex, Goomba.sizey)
+        collision.collide_obj(Goomba, server.mymap)
 
+    def draw(Goomba):
+        if Goomba.timer == -1:
+            Goomba.image.clip_draw(int(Goomba.frame) * 16, 0, 16, 16, Goomba.x - Goomba.camerax, Goomba.y, Goomba.sizex, Goomba.sizey)
+        else:
+            Goomba.image.clip_draw(32, 0, 16, 16, Goomba.x - Goomba.camerax, Goomba.y, Goomba.sizex, Goomba.sizey)
 
 class Move_LState:
     def enter(Goomba, event):
@@ -59,17 +66,29 @@ class Move_LState:
         pass
 
     def do(Goomba):
-        Goomba.x -= MOVE_SPEED * game_framework.frame_time
+        Goomba.camerax = server.mario.get_MapX()
+        if Goomba.die == False:
+            Goomba.x -= MOVE_SPEED * game_framework.frame_time
         Goomba.frame = (Goomba.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
 
-        if Goomba.x < 25:
+        tempx, tempy = (Goomba.x - Goomba.camerax - 25) // 50, math.ceil((Goomba.y - 25) / 50)
+
+        if server.mymap.tile[int(tempx)][(tempy) - 1] == 0:
+            Goomba.y -= (MOVE_SPEED + 300) * game_framework.frame_time
+            if Goomba.y < 125:
+                Goomba.y = 125
+
+        if Goomba.x < 25 or Goomba.x > 10000:
             game_world.remove_object(Goomba)
 
-        Goomba.camerax = Character.get_Map()
+        collision.collide_obj(Goomba, server.mymap)
+
 
     def draw(Goomba):
-        if Goomba.dir == 1:
+        if Goomba.timer == -1:
             Goomba.image.clip_draw(int(Goomba.frame) * 16, 0, 16, 16, Goomba.x - Goomba.camerax, Goomba.y,  Goomba.sizex, Goomba.sizey)
+        else:
+            Goomba.image.clip_draw(32, 0, 16, 16, Goomba.x - Goomba.camerax, Goomba.y, Goomba.sizex, Goomba.sizey)
 
 
 next_state_table = {
@@ -91,10 +110,12 @@ class Goomba:
         self.event_que = []
         self.cur_state = Move_RState
         self.cur_state.enter(self, None)
+        self.timer = -1
+        self.die = False
 
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_Check_Box())
+        # draw_rectangle(*self.get_Check_Box())
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -113,13 +134,25 @@ class Goomba:
 
             self.cur_state.enter(self, event)
 
-        if collision.collide(server.mario, self):
+        if collision.collide(server.mario, self) and self.die == False:
+            if server.mario.get_marioPosY() > self.y:
+                self.die = True
+                server.mario.kick_sound.play()
+                self.timer = 3
+            else:
+                game_world.remove_object(self)
+                if server.mario.cur_life >= 2:
+                    server.mario.cur_life -= 1
+                    server.mario.down()
+                elif server.mario.cur_life <= 1:
+                    server.mario.cur_life -= 1
+                    server.mario.sound_die()
+                    server.mario.add_event(10)
+
+        if self.die:
+            self.timer -= 1
+        if self.timer == 0:
             game_world.remove_object(self)
-            if server.mario.cur_life >= 2:
-                server.mario.cur_life -= 1
-            elif server.mario.cur_life <= 1:
-                server.mario.cur_life -= 1
-                server.mario.add_event(10)
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

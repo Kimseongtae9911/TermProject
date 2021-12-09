@@ -25,6 +25,8 @@ timer = 1000
 
 def enter():
     global image, numbers, timer, press
+    game_world.clear()
+    server.goombas.clear()
     if server.mario == None:
         server.mario = Mario()
     if server.mymap == None:
@@ -117,11 +119,17 @@ def load_saved_world():
         elif isinstance(o, Map):
             server.mymap = o
         elif isinstance(o, Goomba):
-            server.goomba = o
+            server.goombas.append(o)
         elif isinstance(o, Rocket):
             server.rockets = o
         elif isinstance(o, Mushroom):
             server.mushroom = o
+    if server.mymap.tile[0][2] == 0:
+        server.stage = 1
+    elif server.mymap.tile[0][2] == 15:
+        server.stage = 2
+    else:
+        server.stage = 3
     game_framework.change_state(main_state)
 
 def update():

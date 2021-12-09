@@ -16,12 +16,15 @@ class Rocket:
         self.camerax = server.mario.get_MapX()
         self.x, self.y = x + self.camerax, y
         self.rocketsizex, self.rocketsizey = 50, 30
-        self.velocity = 200
+        if server.stage == 1 or server.stage == 3:
+            self.velocity = 200
+        else:
+            self.velocity = 300
 
 
     def draw(self):
         self.rocket.clip_draw(0, 0, 16, 16, self.x - self.camerax, self.y, self.rocketsizex, self.rocketsizey)
-        draw_rectangle(*self.get_Check_Box())
+        # draw_rectangle(*self.get_Check_Box())
 
 
     def update(self):
@@ -33,8 +36,10 @@ class Rocket:
             game_world.remove_object(self)
             if server.mario.cur_life >= 2:
                 server.mario.cur_life -= 1
+                server.mario.down()
             elif server.mario.cur_life == 1:
                 server.mario.cur_life -= 1
+                server.mario.sound_die()
                 server.mario.add_event(10)
         self.camerax = server.mario.get_MapX()
 

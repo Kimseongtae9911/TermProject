@@ -75,10 +75,6 @@ class Map:
                         Map.castle.clip_draw(0, 0, 80, 80, (j * self.blocksize) + ((self.blocksize * 5) // 2) - self.camerax,
                                               i * self.blocksize + ((self.blocksize * 5) // 2), self.blocksize * 5,
                                               self.blocksize * 5)
-        for i in range(0, 16):
-            for j in range(0, 254):
-                 if self.tile[j][i] == 5:
-                    draw_rectangle(*self.get_Check_Box(i, j))
 
     def update(self):
         if server.mario.get_marioPos() == SCREENW - 300:

@@ -31,6 +31,7 @@ class IdleState:
         pass
 
     def do(mushroom):
+        mushroom.camerax = server.mario.get_MapX()
         if mushroom.drawy < 16:
             mushroom.drawy += 16 * game_framework.frame_time
             mushroom.y += 25 * game_framework.frame_time
@@ -39,10 +40,6 @@ class IdleState:
             mushroom.y = int(mushroom.y)
             mushroom.add_event(RIGHT)
 
-        if mushroom.x < 25:
-            game_world.remove_object(mushroom)
-
-        mushroom.camerax = server.mario.get_MapX()
 
     def draw(mushroom):
         mushroom.mushroom.clip_draw(0, 16 - int(mushroom.drawy), 16, int(mushroom.drawy), mushroom.x - mushroom.camerax, mushroom.y,
@@ -62,8 +59,10 @@ class Move_RState:
         tempx, tempy = (mushroom.x - mushroom.camerax - 25) // 50, math.ceil((mushroom.y - 25) / 50)
 
         if server.mymap.tile[int(tempx)][(tempy) - 1] == 0:
-            mushroom.y -= (MOVE_SPEED + 100) * game_framework.frame_time
-        if mushroom.x < 25:
+            mushroom.y -= (MOVE_SPEED + 300) * game_framework.frame_time
+            if mushroom.y < 125: mushroom.y = 125
+
+        if mushroom.x < 25 or (mushroom.x - (server.mario.x + server.mario.mapx) > 1280):
             game_world.remove_object(mushroom)
 
     def draw(mushroom):
@@ -78,12 +77,18 @@ class Move_LState:
         pass
 
     def do(mushroom):
+        mushroom.camerax = server.mario.get_MapX()
         mushroom.x -= MOVE_SPEED * game_framework.frame_time
+        tempx, tempy = (mushroom.x - mushroom.camerax - 25) // 50, math.ceil((mushroom.y - 25) / 50)
 
-        if mushroom.x < 25:
+        if server.mymap.tile[int(tempx)][(tempy) - 1] == 0:
+            mushroom.y -= (MOVE_SPEED + 300) * game_framework.frame_time
+            if mushroom.y < 125: mushroom.y = 125
+
+        if mushroom.x < 25 or (mushroom.x - (server.mario.x + server.mario.mapx) > 1280):
             game_world.remove_object(mushroom)
 
-        mushroom.camerax = server.mario.get_MapX()
+
 
     def draw(mushroom):
         if mushroom.dir == 1:
@@ -114,9 +119,10 @@ class Mushroom:
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
+
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_Check_Box())
+        # draw_rectangle(*self.get_Check_Box())
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -139,6 +145,7 @@ class Mushroom:
             game_world.remove_object(self)
             if server.mario.cur_life < 2:
                 server.mario.cur_life += 1
+                server.mario.up()
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

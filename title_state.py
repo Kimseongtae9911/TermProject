@@ -5,7 +5,7 @@ import os
 from pico2d import *
 import game_framework
 import loading_state
-
+import server
 
 name = "TitleState"
 SCREENW = 1280; SCREENH = 800
@@ -14,6 +14,9 @@ image2 = None
 timer = 1000
 
 def enter():
+    server.bgm = load_music('Resource\Sound\Mario_Song.mp3')
+    server.bgm.set_volume(10)
+    server.bgm.repeat_play()
     global image, image2, timer
     image = load_image('Resource\Title.png')
     image2 = load_image('Resource\PRESS_TITLE.png')

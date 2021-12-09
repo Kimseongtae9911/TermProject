@@ -17,7 +17,7 @@ class Flower:
         self.drawy = 0
 
     def draw(self):
-        draw_rectangle(*self.get_Check_Box())
+        # draw_rectangle(*self.get_Check_Box())
         Flower.image.clip_draw(0, 16 - int(self.drawy), 16, int(self.drawy), self.x - self.camerax, self.y, self.flowersize, self.flowersize - (16 - int(self.drawy)) * 3)
 
     def update(self):
@@ -32,6 +32,7 @@ class Flower:
         if collision.collide(server.mario, self):
             game_world.remove_object(self)
             server.mario.cur_life = 3
+            server.mario.up()
 
         self.camerax = server.mario.get_MapX()
 

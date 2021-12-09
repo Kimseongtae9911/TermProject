@@ -16,6 +16,15 @@ def collide(a, b):
 
     return True
 
+def collide_obj(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_Check_Box()
+    for j in range(0, 255):
+        left_b, bottom_b, right_b, top_b = b.get_Check_Box(2, j)
+        if (server.mymap.tile[j][2] == 1 or server.mymap.tile[j][2] == 2):
+            if left_a < left_b and right_a > left_b:
+                a.add_event(1)
+            elif left_a < right_b and right_a > right_b:
+                a.add_event(0)
 
 def collide_base(a, b):
     left_a, bottom_a, right_a, top_a = a.get_Check_Box()
@@ -82,10 +91,10 @@ def collide_mario(a):
             if server.mymap.tile[checkx2][checky1] == -2:
                 server.mario.add_event(13)
             elif server.mymap.tile[checkx1][checky2] == 5:
-                if checkx1 == 16:
+                if checkx1 == 16 or checkx1 == 79:
                     mushroom = Mushroom(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(mushroom, 1)
-                elif checkx1 == 23:
+                elif checkx1 == 23 or (checkx1 == 111 and checky2 == 9):
                     flower = Flower(checkx1 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(flower, 1)
                 server.mymap.tile[checkx1][checky2] = 7
@@ -97,10 +106,10 @@ def collide_mario(a):
             if server.mymap.tile[checkx2][checky1] == -2:
                 server.mario.add_event(13)
             elif server.mymap.tile[checkx2][checky2] == 5:
-                if checkx2 == 16:
+                if checkx2 == 16 or checkx2 == 79:
                     mushroom = Mushroom(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(mushroom, 1)
-                elif checkx2 == 23:
+                elif checkx2 == 23 or (checkx2 == 111 and checky2 == 9):
                     flower = Flower(checkx2 * server.mymap.blocksize + 25 - server.mario.mapx, (checky2 + 1) * server.mymap.blocksize)
                     game_world.add_object(flower, 1)
                 server.mymap.tile[checkx2][checky2] = 7
